@@ -2,9 +2,9 @@
 
 ## 该程序是一个基于springboot开发的《程序员小论坛》  
 
-  ### 主要运用了Spring Boot+mybatis技术，页面使用了Thymeleaf模板+Bootstrap框架，登录和权限验证使用了Spring Security安全框架进行开发  
+### 主要运用了Spring Boot+mybatis技术，页面使用了Thymeleaf模板+Bootstrap框架，登录和权限验证使用了Spring Security安全框架进行开发  
 
-## 系统分为两个用户，一个是管理员，另一个是用户，管理员拥有特殊权限，同时管理员也具有用户的权限  
+### 系统分为两个用户，一个是管理员，另一个是用户，管理员拥有特殊权限，同时管理员也具有用户的权限  
 
   ### 管理员权限：  
   
