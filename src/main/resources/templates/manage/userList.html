@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>用户列表</title>
+</head>
+<body>
+<div class="container">
+    <th:block th:if="${page.totalCount}!=0">
+        <div class="input-group post-search">
+            <form th:action="@{/admin/userList}">
+                <input type="text" name="queryUserName" class="form-control post-query" placeholder="查找用户">
+                <span class="input-group-btn">
+                    <button class="btn btn-default">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+            </form>
+            <br>
+            <a th:href="@{/admin/userList(currPage=${beforeCurrPage},orderType='asc',queryUserName=${queryUserName})}">
+                <i class="glyphicon glyphicon-sort-by-order"></i>
+                <span>按创建时间升序排列</span>
+            </a>
+            <br>
+            <a th:href="@{/admin/userList(currPage=${beforeCurrPage},queryUserName=${queryUserName})}">
+                <i class="glyphicon glyphicon-sort-by-order-alt"></i>
+                <span>按创建时间降序排列</span>
+            </a>
+            <br>
+        </div>
+        <div>
+            <ul class="list-group list-custom-corner">
+                <li class="list-group-item side-borderless last-border" th:each="user:${users}" th:if="${userName}!=${user.userName}">
+                    <div class="media">
+                        <th:block th:replace="fragments/userList :: userList"></th:block>
+                        <div class="media-right">
+                            <button type="button" class="btn btn-danger" th:onclick="userDelete([[${user.userId}]])">注销用户</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="text-center">
+                <th:block th:unless="${not #lists.isEmpty(users)}">
+                    该页数据为空，请返回
+                    <a th:href="@{/admin/userList(currPage=${page.currPage}-1,orderType=${orderType},queryUserName=${queryUserName})}"
+                       aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                            aria-hidden="true">上一页</span>
+                    </a>
+                </th:block>
+                <th:block th:if="${not #lists.isEmpty(users)}">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li>
+                                <a th:href="@{/admin/userList(currPage=1,orderType=${orderType},queryUserName=${queryUserName})}"
+                                   aria-label="Previous"> <span aria-hidden="true">首页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                                </a>
+                                <a th:href="@{/admin/userList(currPage=${page.currPage}-1,orderType=${orderType},queryUserName=${queryUserName})}"
+                                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                        aria-hidden="true">上一页</span>
+                                </a>
+                            </li>
+                            <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                                <li th:if="${ status.count} eq ${page.currPage}">
+                                    <a th:href="@{/admin/userList(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}" class="page-select">[[${ status.count}]]</a></li>
+                                <li th:unless="${ status.count} eq ${page.currPage}">
+                                    <a th:href="@{/admin/userList(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}">[[${ status.count}]]</a></li>
+                            </th:block>
+                            <li>
+                                <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                                <a th:href="@{/admin/userList(currPage=${page.currPage}+1,orderType=${orderType},queryUserName=${queryUserName})}"
+                                   th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/admin/userList(currPage=${page.totalPage},orderType=${orderType},queryUserName=${queryUserName})}"
+                                   aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </th:block>
+            </div>
+        </div>
+    </th:block>
+    <th:block th:unless="${page.totalCount}!=0">
+        <h3>暂无数据</h3>
+    </th:block>
+</div>
+<script type="text/javascript">
+    function gotoInfo(info) {
+        window.location.href="/user/otherInfo?userName="+info;
+    }
+
+    function userDelete(info) {
+        var msg = "将会强制注销该用户，无法撤销！\n还会删除该用户的帖子和回复！\n请确认！";
+        if (confirm(msg)==true){
+            $.ajax({
+                url:"[[@{/admin/userDelete}]]",
+                async:true,
+                type:"post",
+                data: JSON.stringify(info),
+                contentType:"application/json;charset=UTF-8",
+                dataType:"text",
+                success:function(data){
+                    if(data==1){
+                        alert("注销成功！");
+                        window.location.reload();
+                    }else{
+                        alert("注销失败，请稍后再试");
+                    }
+                },
+                error:function(){
+                    alert("服务器繁忙");
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

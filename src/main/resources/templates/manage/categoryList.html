@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>类别列表</title>
+</head>
+<body>
+<div class="container">
+    <th:block th:if="${page.totalCount}!=0">
+        <div class="input-group post-search">
+            <form th:action="@{/admin/categoryList}">
+                <input type="text" name="queryCategoryName" class="form-control post-query" placeholder="查找类别">
+                <span class="input-group-btn">
+                    <button class="btn btn-default">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+            </form>
+            <br>
+            <input type="text" id="newCategory" class="form-control post-query">
+            <button type="button" class="btn btn-default" onclick="categoryAdd()">新增分类</button>
+            <br><br>
+            <a th:href="@{/admin/categoryList(currPage=${beforeCurrPage},orderType='asc',queryCategoryName=${queryCategoryName})}">
+                <i class="glyphicon glyphicon-sort-by-order"></i>
+                <span>按创建时间升序排列</span>
+            </a>
+            <br>
+            <a th:href="@{/admin/categoryList(currPage=${beforeCurrPage},queryCategoryName=${queryCategoryName})}">
+                <i class="glyphicon glyphicon-sort-by-order-alt"></i>
+                <span>按创建时间降序排列</span>
+            </a>
+        </div>
+        <div class="category-ul-li">
+            <ul class="list-group list-custom-corner">
+                <li class="list-group-item side-borderless last-border" th:each="category:${categorys}">
+                    <div class="media">
+                        <div class="media-body">
+                            <div class="media-heading">
+                                <h3 class="text-center">[[${category.categoryName}]]</h3>
+                            </div>
+                            <div>
+                                <h4 class="text-center" th:text="${'创建时间：'+#dates.format(category.categoryCreatedDate, 'yyyy-MM-dd HH:mm')}"></h4>
+                                <h4 class="text-center" th:text="${'帖子数量：'+category.categoryPostCount}"></h4>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-danger" th:onclick="categoryDelete([[${category.categoryId}]])">删除该分类</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="text-center">
+            <th:block th:unless="${not #lists.isEmpty(categorys)}">
+                该页数据为空，请返回
+                <a th:href="@{/admin/categoryList(currPage=${page.currPage}-1,orderType=${orderType},queryCategoryName=${queryCategoryName})}"
+                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                        aria-hidden="true">上一页</span>
+                </a>
+            </th:block>
+            <th:block th:if="${not #lists.isEmpty(categorys)}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li>
+                            <a th:href="@{/admin/categoryList(currPage=1,orderType=${orderType},queryCategoryName=${queryCategoryName})}"
+                               aria-label="Previous"> <span aria-hidden="true">首页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                            </a>
+                            <a th:href="@{/admin/categoryList(currPage=${page.currPage}-1,orderType=${orderType},queryCategoryName=${queryCategoryName})}"
+                               aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                    aria-hidden="true">上一页</span>
+                            </a>
+                        </li>
+                        <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                            <li th:if="${ status.count} eq ${page.currPage}">
+                                <a th:href="@{/admin/categoryList(currPage=${ status.count},orderType=${orderType},queryCategoryName=${queryCategoryName})}" class="page-select">[[${ status.count}]]</a></li>
+                            <li th:unless="${ status.count} eq ${page.currPage}">
+                                <a th:href="@{/admin/categoryList(currPage=${ status.count},orderType=${orderType},queryCategoryName=${queryCategoryName})}">[[${ status.count}]]</a></li>
+                        </th:block>
+                        <li>
+                            <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                                <span aria-hidden="true">下一页</span>
+                            </a>
+                            <a th:href="@{/admin/categoryList(currPage=${page.currPage}+1,orderType=${orderType},queryCategoryName=${queryCategoryName})}"
+                               th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                <span aria-hidden="true">下一页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/categoryList(currPage=${page.totalPage},orderType=${orderType},queryCategoryName=${queryCategoryName})}"
+                               aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </th:block>
+        </div>
+    </th:block>
+    <th:block th:unless="${page.totalCount}!=0">
+        <h3>暂无数据</h3>
+    </th:block>
+</div>
+<script type="text/javascript">
+    function categoryDelete(info) {
+        var msg = "将会删除该分类，无法撤销！\n还会删除该分类下的帖子和回复！\n请确认！";
+        if (confirm(msg)==true){
+            $.ajax({
+                url:"[[@{/admin/categoryDelete}]]",
+                async:true,
+                type:"post",
+                data: JSON.stringify(info),
+                contentType:"application/json;charset=UTF-8",
+                dataType:"text",
+                success:function(data){
+                    if(data==1){
+                        alert("删除成功！");
+                        window.location.reload();
+                    }else{
+                        alert("删除失败，请稍后再试");
+                    }
+                },
+                error:function(){
+                    alert("服务器繁忙");
+                }
+            });
+        }
+    }
+
+    function categoryAdd() {
+        var name = $('#newCategory').val();
+        $.ajax({
+            url: "[[@{/admin/categoryAdd}]]",
+            async: true,
+            type: "post",
+            data: JSON.stringify({"categoryName":name}),
+            contentType: "application/json;charset=UTF-8",
+            dataType: "text",
+            success: function (data) {
+                if (data==1) {
+                    alert("创建成功！");
+                    window.location.reload();
+                }else if(data==-1){
+                    alert("创建失败，请核对输入信息");
+                }else if(data==-2){
+                    alert("创建失败，已存在该分类");
+                }else{
+                    alert("创建失败，请稍后再试");
+                }
+            },
+            error: function () {
+                alert("服务器繁忙");
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

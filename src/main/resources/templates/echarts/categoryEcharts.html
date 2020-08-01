@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>各个分类下的帖子数量图表</title>
+</head>
+<body>
+<div id="main" style="width: 800px;height:600px;"></div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var myChart = echarts.init(document.getElementById('main'));
+        myChart.showLoading();
+        var names=[];
+        var values=[];
+        $.ajax({
+            type : "post",
+            async : true,
+            url : "[[@{/echarts/categoryEcharts}]]",
+            data : {},
+            dataType : "json",
+            success : function(result) {
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        names.push(result[i].name);
+                        values.push(result[i].num);
+                    }
+                    myChart.hideLoading();
+                    myChart.setOption({
+                        tooltip: {},
+                        toolbox: {
+                            show: true,
+                            feature:
+                                {
+                                    dataZoom:
+                                        {
+                                            realtime: false,
+                                            yAxisIndex: 'none',
+                                        },
+                                    restore: {},
+                                }
+                        },
+                        dataZoom: [
+                                {type: 'inside'},
+                                {type: 'slider'},
+                            ],
+                        legend: {
+                            data:['数量']
+                        },
+                        xAxis: {
+                            data: names,
+                            axisLabel:{
+                                interval:0,
+                                rotate:45,
+                            }
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data: values
+                        }]
+                    });
+                }
+            },
+            error : function(errorMsg) {
+                alert("图表请求数据失败!");
+                myChart.hideLoading();
+            }
+        });
+    });
+</script>
+</body>
+</html>

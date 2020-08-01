@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="fansList">
+    <ul class="list-group list-custom-corner">
+        <li class="list-group-item side-borderless last-border" th:each="user:${users}">
+            <div class="media">
+                <div class="media-left media-middle text-center">
+                    <th:block th:if="${not #strings.isEmpty(user.userPortrait)}">
+                        <img class="small-portrait" th:src="@{${user.userPortrait}}">
+                    </th:block>
+                    <th:block th:unless="${not #strings.isEmpty(user.userPortrait)}">
+                        <img class="small-portrait" th:src="@{/images/default_portrait.jpg}">
+                    </th:block>
+                </div>
+                <div class="media-body">
+                    <a th:href="@{/user/otherInfo(userName=${user.userName})}">
+                        <h3>[[${user.userName}]]</h3>
+                    </a>
+                    <h4 th:text="${user.userEmail}"></h4>
+                    <h4 th:text="${#dates.format(user.follow.followDate, 'yyyy-MM-dd HH:mm')}"></h4>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<body>
+<div class="navbar navbar-default navbar-static-top" th:fragment="header">
+    <div class="container">
+        <div class="row">
+        <div class="col-md-6 navbar-header">
+            <a class="navbar-brand" href="#">程序猿小论坛</a>
+        </div>
+        <div class="col-md-6" sec:authorize="isAnonymous()">
+            <ul class="nav navbar-nav header-right">
+                <li><a th:href="@{/post/home}">首页</a></li>
+                <li><a th:href="@{/toLogin}">注册</a></li>
+                <li><a th:href="@{/toLogin}">登录</a></li>
+            </ul>
+        </div>
+        <div class="col-md-6" sec:authorize="isAuthenticated()">
+            <ul class="nav navbar-nav header-right">
+                <li><a href="#" sec:authentication="name"></a></li>
+                <li><a th:href="@{/post/home}">首页</a></li>
+                <li><a th:href="@{/user/settings}">设置</a></li>
+                <li sec:authorize="hasAuthority('admin')"><a th:href="@{/admin/manage}">管理</a></li>
+                <li><a th:href="@{/logout}">退出</a></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

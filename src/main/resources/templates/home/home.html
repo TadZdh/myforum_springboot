@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:include="fragments/head :: head">
+    <title>首页</title>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="input-group post-search">
+                <form th:action="@{/post/home}">
+                    <input type="hidden" name="categoryName" th:value="${choose}">
+                    <input type="text" name="queryPostTitle" class="form-control post-query" placeholder="查找帖子">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </form>
+            </div>
+            <a th:href="@{/post/home(currPage=${beforeCurrPage},categoryName=${choose},orderType='asc',queryPostTitle=${queryPostTitle})}">
+                <i class="glyphicon glyphicon-sort-by-order"></i>
+                <span>按创建时间升序排列</span>
+            </a>
+            <br>
+            <a th:href="@{/post/home(currPage=${beforeCurrPage},categoryName=${choose},queryPostTitle=${queryPostTitle})}">
+                <i class="glyphicon glyphicon-sort-by-order-alt"></i>
+                <span>按创建时间降序排列</span>
+            </a>
+            <br>
+            <h4>当前类别：[[${choose}]]</h4>
+            <button type="button" class="btn btn-default btn-lg" data-toggle="modal"
+                    data-target="#many">更多分类>>
+            </button>
+            <br>
+            <div class="modal fade" id="many" tabindex="-1" role="dialog" aria-labelledby="Label">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="Label">更多分类</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table>
+                                <tr>
+                                    <th:block th:each="category,status:${categorys}" >
+                                        <td>
+                                            <th:block th:if="${choose}==${category.categoryName}">
+                                                <h4>[[${category.categoryName}]]</h4>
+                                            </th:block>
+                                            <th:block th:unless="${choose}==${category.categoryName}">
+                                                <a class="font-omission" th:href="@{/post/home(categoryName=${category.categoryName})}">[[${category.categoryName}]]</a>
+                                            </th:block>
+                                        </td>
+                                        <th:block th:if="${status.count % 4 eq 0}" th:utext="'</tr><tr>'" ></th:block>
+                                    </th:block>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div th:replace="fragments/notice :: notice"></div>
+        </div>
+        <div class="col-md-9">
+            <div>
+                <ul th:replace="fragments/postList :: postList"></ul>
+            </div>
+            <th:block th:if="${not #lists.isEmpty(posts)}">
+                <div class="pull-right" sec:authorize="hasAuthority('admin')">
+                    <button type="button" class="btn btn-danger" onclick="return del()">删除</button>
+                </div>
+            </th:block>
+            <div class="text-center">
+                <th:block th:if="${page.totalCount}!=0">
+                    <th:block th:unless="${not #lists.isEmpty(posts)}">
+                        该页数据为空，请返回
+                        <a th:href="@{/post/home(currPage=${page.currPage}-1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                           aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                aria-hidden="true">上一页</span>
+                        </a>
+                    </th:block>
+                    <th:block th:if="${not #lists.isEmpty(posts)}"><nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li>
+                                <a th:href="@{/post/home(currPage=1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   aria-label="Previous"> <span aria-hidden="true">首页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                                </a>
+                                <a th:href="@{/post/home(currPage=${page.currPage}-1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                        aria-hidden="true">上一页</span>
+                                </a>
+                            </li>
+                            <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                                <li th:if="${ status.count} eq ${page.currPage}">
+                                    <a th:href="@{/post/home(currPage=${ status.count},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}" class="page-select">[[${ status.count}]]</a></li>
+                                <li th:unless="${ status.count} eq ${page.currPage}">
+                                    <a th:href="@{/post/home(currPage=${ status.count},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${ status.count}]]</a></li>
+                            </th:block>
+                            <li>
+                                <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                                <a th:href="@{/post/home(currPage=${page.currPage}+1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/post/home(currPage=${page.totalPage},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    </th:block>
+                </th:block>
+                <th:block th:unless="${page.totalCount}!=0">
+                    暂无数据
+                </th:block>
+            </div>
+            <div class="form-group" sec:authorize="isAnonymous()">
+                <label>发布新帖子</label>
+                <input type="text" class="form-control" placeholder="登录后即可发布新帖子" readonly>
+                <textarea class="form-control" rows="6" style="resize: none;" placeholder="登录后即可发布新帖子" readonly></textarea>
+            </div>
+            <div class="form-group" sec:authorize="isAuthenticated()">
+                <th:block th:if="${user.userFlag}==1">
+                    <label>发布新帖子</label>
+                    <input type="text" id="postTitle" name="postTitle" class="form-control" placeholder="标题">
+                    <textarea id="postBody" name="postBody" class="form-control" rows="6" style="resize: none;" placeholder="内容"></textarea>
+                    <div th:replace="fragments/code :: code"></div>
+                    <button type="button" class="btn btn-default" onclick="postWrite()">发表</button>
+                </th:block>
+                <th:block th:unless="${user.userFlag}==1">
+                    <label>发布新帖子</label>
+                    <input type="text" class="form-control" placeholder="你已被禁言" readonly>
+                    <textarea class="form-control" rows="6" style="resize: none;" placeholder="你已被禁言" readonly></textarea>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function postWrite() {
+        var postTitle = $("#postTitle").val();
+        var postBody = $("#postBody").val();
+        var mycode = $('#mycode').val();
+        if(postTitle==''){
+            alert("标题不能为空");
+        }else if(postBody==''){
+            alert("内容不能为空");
+        }else if(mycode=='') {
+            alert("验证码不能为空");
+        }else {
+            var param = {"postTitle": postTitle, "postBody": postBody, "categoryName": "[[${choose}]]", "code": mycode};
+            $.ajax({
+                url: "[[@{/user/postWrite}]]",
+                async: true,
+                type: "post",
+                data: JSON.stringify(param),
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data == 1) {
+                        alert("发表成功！");
+                        window.location.reload();
+                    } else if (data == -1) {
+                        alert("验证码错误！");
+                    } else {
+                        alert("发表失败，请稍后再试");
+                    }
+                },
+                error: function () {
+                    alert("服务器繁忙");
+                }
+            });
+        }
+    }
+
+    function codeRefresh() {
+        var path = "/toGetCode?id=" + Math.random();
+        $("#codeImg").attr("src", path);
+    }
+
+    function del() {
+        if (confirm("确定要删除吗？")) {
+            var obj = document.getElementsByName('check');
+            var s = new Array();
+            for (var i = 0; i < obj.length; i++) {
+                if (obj[i].checked)
+                    s.push(obj[i].value);
+            }
+            if (s == '') {
+                alert("你还没有选择任何内容！");
+            }else{
+                var param = {"deleteId":s,"categoryName":"[[${choose}]]"};
+                $.ajax({
+                    url:"[[@{/admin/postDelete}]]",
+                    async:true,
+                    type:"post",
+                    data: JSON.stringify(param),
+                    contentType:"application/json;charset=UTF-8",
+                    dataType:"text",
+                    success:function(data){
+                        if(data>0){
+                            alert("删除成功！");
+                            window.location.reload();
+                        }else{
+                            alert("删除失败，请稍后再试");
+                        }
+                    },
+                    error:function(){
+                        alert("服务器繁忙");
+                    }
+                });
+            }
+        }
+    }
+</script>
+</body>
+</html>

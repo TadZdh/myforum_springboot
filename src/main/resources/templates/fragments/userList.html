@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="userList">
+    <div class="media-left media-middle text-center">
+        <th:block th:if="${not #strings.isEmpty(user.userPortrait)}">
+            <img class="small-portrait" th:src="@{${user.userPortrait}}">
+        </th:block>
+        <th:block th:unless="${not #strings.isEmpty(user.userPortrait)}">
+            <img class="small-portrait" th:src="@{/images/default_portrait.jpg}">
+        </th:block>
+    </div>
+    <div class="media-body">
+        <div>
+            <h4 th:text="${'姓名：'+user.userName}"></h4>
+            <h4 th:text="${'邮箱：'+user.userEmail}"></h4>
+            <h4 th:text="${'个性签名：'+user.userSignature}"></h4>
+            <h4 th:text="${'注册时间：'+#dates.format(user.userCreatedDate, 'yyyy-MM-dd HH:mm')}"></h4>
+        </div>
+    </div>
+    <div class="media-right">
+        <button type="button" class="btn btn-default" th:onclick="gotoInfo([[${user.userName}]])">前往TA主页</button>
+    </div>
+</th:block>
+</body>
+</html>

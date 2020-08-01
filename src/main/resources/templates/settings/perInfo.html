@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>个人信息</title>
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${'你好，'+user.userName}"></h1>
+    <h4>你的关注：[[${follows}]]</h4>
+    <h4>你的粉丝：[[${fans}]]</h4>
+    <th:block th:if="${user.userFlag}==1">
+        <h4>你的状态：正常</h4>
+    </th:block>
+    <th:block th:unless="${user.userFlag}==1">
+        <h4 style="color: red;">你的状态：禁言</h4>
+    </th:block>
+    <h4 th:text="${'注册时间：'+#dates.format(user.userCreatedDate, 'yyyy-MM-dd HH:mm')}"></h4>
+    <br>
+    <table>
+        <tr>
+            <td>当前头像：</td>
+            <td width="200px" align="left">
+                <th:block th:if="${not #strings.isEmpty(user.userPortrait)}">
+                    <img class="small-portrait" th:src="@{${user.userPortrait}}" width="150px" height="150px">
+                </th:block>
+                <th:block th:unless="${not #strings.isEmpty(user.userPortrait)}">
+                    <img class="small-portrait" th:src="@{/images/default_portrait.jpg}" width="150px" height="150px">
+                </th:block>
+            <td><input type="file" id="fileUpload" name="fileUpload" value="更改头像"></td>
+        </tr>
+    </table>
+    <br>
+    <div class="row form-group">
+        <p>签名：</p>
+        <input th:value="${user.userSignature}" id="userSignature" name="userSignature" type="text" class="form-control" placeholder="签名" />
+    </div>
+    <div class="row form-group">
+        <p>Email：</p>
+        <input th:value="${user.userEmail}" id="userEmail" name="userEmail" type="text" class="form-control" placeholder="Email" />
+    </div>
+    <div class="text-center">
+        <button class="btn btn-default" type="button" onclick="userUpdate()">更新资料</button>
+    </div>
+</div>
+<script type="text/javascript">
+    function userUpdate() {
+        var userSignature = $("#userSignature").val();
+        var userEmail = $("#userEmail").val();
+        if(userSignature==''||userEmail=='')
+            alert("输入不能为空");
+        else {
+            var param = {"userSignature": userSignature, "userEmail": userEmail};
+            $.ajax({
+                url: "[[@{/user/userUpdate}]]",
+                async: true,
+                type: "post",
+                data: JSON.stringify(param),
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data == 1) {
+                        alert("更新成功！");
+                        window.location.reload();
+                    } else {
+                        alert("更新失败，请稍后再试");
+                    }
+                },
+                error: function () {
+                    alert("服务器繁忙");
+                }
+            });
+        }
+    }
+
+    $("#fileUpload").change(function(){
+        var file = $("#fileUpload")[0].files[0];
+        var formData = new FormData();
+        formData.append("files",file);
+        $.ajax({
+            type:"post",
+            //dataType:"json",
+            url:"[[@{/user/fileUpload}]]",
+            data:formData,
+            //traditional:true,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                if(data>0){
+                    alert("上传成功！");
+                    window.location.reload();
+                }else if(data==-1){
+                    alert("上传的文件不是图片！");
+                }else if(data==-2){
+                    alert("没有上传图片！");
+                }else if(data==-3){
+                    alert("上传图片大于3M，请重新上传！");
+                }else{
+                    alert("上传失败，请稍后再试");
+                }
+            },
+            error:function(){
+                alert("服务器繁忙");
+            }
+        })
+    })
+</script>
+</body>
+</html>

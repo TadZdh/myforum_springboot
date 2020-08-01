@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>新帖子列表</title>
+</head>
+<body>
+<div class="container">
+    <th:block th:if="${page.totalCount}!=0">
+        <div class="input-group post-search">
+            <form th:action="@{/admin/newPostList}">
+                <input type="text" name="queryPostTitle" class="form-control post-query" placeholder="查找帖子">
+                <span class="input-group-btn">
+                    <button class="btn btn-default">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+            </form>
+            <br>
+            <a th:href="@{/admin/newPostList(currPage=${beforeCurrPage},orderType='asc',queryPostTitle=${queryPostTitle})}">
+                <i class="glyphicon glyphicon-sort-by-order"></i>
+                <span>按创建时间升序排列</span>
+            </a>
+            <br>
+            <a th:href="@{/admin/newPostList(currPage=${beforeCurrPage},queryPostTitle=${queryPostTitle})}">
+                <i class="glyphicon glyphicon-sort-by-order-alt"></i>
+                <span>按创建时间降序排列</span>
+            </a>
+            <br>
+            <h4>以下仅展示近七天的新帖子，更多请前往首页查看</h4>
+        </div>
+        <div>
+            <ul th:replace="fragments/postList :: postList"></ul>
+            <div class="text-center">
+                <th:block th:unless="${not #lists.isEmpty(posts)}">
+                    该页数据为空，请返回
+                    <a th:href="@{/admin/newPostList(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                       aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                            aria-hidden="true">上一页</span>
+                    </a>
+                </th:block>
+                <th:block th:if="${not #lists.isEmpty(posts)}">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li>
+                                <a th:href="@{/admin/newPostList(currPage=1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   aria-label="Previous"> <span aria-hidden="true">首页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                                </a>
+                                <a th:href="@{/admin/newPostList(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                        aria-hidden="true">上一页</span>
+                                </a>
+                            </li>
+                            <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                                <li th:if="${ status.count} eq ${page.currPage}">
+                                    <a th:href="@{/admin/newPostList(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}" class="page-select">[[${ status.count}]]</a></li>
+                                <li th:unless="${ status.count} eq ${page.currPage}">
+                                    <a th:href="@{/admin/newPostList(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${ status.count}]]</a></li>
+                            </th:block>
+                            <li>
+                                <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                                <a th:href="@{/admin/newPostList(currPage=${page.currPage}+1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                    <span aria-hidden="true">下一页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/admin/newPostList(currPage=${page.totalPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </th:block>
+            </div>
+        </div>
+    </th:block>
+    <th:block th:unless="${page.totalCount}!=0">
+        <h3>暂无数据</h3>
+    </th:block>
+</div>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

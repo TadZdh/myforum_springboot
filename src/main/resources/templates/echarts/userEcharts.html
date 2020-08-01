@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>活跃用户数量图表</title>
+</head>
+<body>
+<div id="main" style="width: 800px;height:600px;"></div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var myChart = echarts.init(document.getElementById('main'));
+        myChart.showLoading();
+        var servicename=[];
+        var servicedata=[];
+        $.ajax({
+            type : "post",
+            async : true,
+            url : "[[@{/echarts/userEcharts}]]",
+            data : {},
+            dataType : "json",
+            success : function(result) {
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        servicename[i]=result[i].name;
+                        var obj=new Object();
+                        obj.name = result[i].name;
+                        obj.value = result[i].num;
+                        servicedata[i]=obj;
+                    }
+                    myChart.hideLoading();
+                    myChart.setOption({
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: '{a} <br/>{b}: {c} ({d}%)'
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 10,
+                                data: servicename
+                            },
+                            series: [
+                                {
+                                    name: '数据百分比',
+                                    type: 'pie',
+                                    radius: ['60%', '85%'],
+                                    avoidLabelOverlap: false,
+                                    label: {
+                                        show: false,
+                                        position: 'center'
+                                    },
+                                    emphasis: {
+                                        label: {
+                                            show: true,
+                                            fontSize: '30',
+                                            fontWeight: 'bold'
+                                        }
+                                    },
+                                    labelLine: {
+                                        show: false
+                                    },
+                                    data: servicedata
+                                }
+                            ]
+                    });
+                }
+            },
+            error : function(errorMsg) {
+                alert("图表请求数据失败!");
+                myChart.hideLoading();
+            }
+        });
+    });
+</script>
+</body>
+</html>

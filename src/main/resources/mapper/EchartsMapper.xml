@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.myforum_springboot.mapper.EchartsMapper">
+
+    <resultMap id="categoryList" type="category">
+        <id property="categoryId" column="category_id"></id>
+        <result property="categoryName" column="category_name"></result>
+        <result property="categoryPostCount" column="category_post_count"></result>
+    </resultMap>
+    <select id="categoryList" resultMap="categoryList">
+        select category_id,category_name,category_post_count from t_category
+    </select>
+
+    <select id="inactiveUserCount" resultType="int">
+        select count(*) from t_user
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) > user_login_date
+    </select>
+
+    <select id="activeUserCount" resultType="int">
+        select count(*) from t_user
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= user_login_date
+    </select>
+
+    <select id="newPostLastDay" parameterType="int" resultType="int">
+        select count(*) from t_post
+        where DATE_SUB(CURDATE(), INTERVAL #{day} DAY) &lt; post_created_date
+        and post_created_date &lt;= DATE_SUB(CURDATE(), INTERVAL #{day}-1 DAY)
+    </select>
+
+    <select id="normalUserCount" resultType="int">
+        select count(*) from t_user where user_flag = 1
+    </select>
+
+    <select id="forbidUserCount" resultType="int">
+        select count(*) from t_user where user_flag = 0
+    </select>
+</mapper>

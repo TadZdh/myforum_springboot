@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>个人帖子列表</title>
+</head>
+<body>
+<div class="container">
+    <th:block th:if="${page.totalCount}!=0">
+        <div class="input-group post-search">
+            <form th:action="@{/user/perPost}">
+                <input type="text" name="queryPostTitle" class="form-control post-query" placeholder="查找帖子">
+                <span class="input-group-btn">
+                    <button class="btn btn-default">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+            </form>
+        </div>
+        <a th:href="@{/user/perPost/(currPage=${beforeCurrPage},orderType='asc',queryPostTitle=${queryPostTitle})}">
+            <i class="glyphicon glyphicon-sort-by-order"></i>
+            <span>按创建时间升序排列</span>
+        </a>
+        <br>
+        <a th:href="@{/user/perPost/(currPage=${beforeCurrPage},queryPostTitle=${queryPostTitle})}">
+            <i class="glyphicon glyphicon-sort-by-order-alt"></i>
+            <span>按创建时间降序排列</span>
+        </a>
+        <br>
+        <br>
+        <div>
+            <ul class="list-group list-custom-corner">
+                <li class="list-group-item side-borderless last-border" th:each="post:${posts}">
+                    <div>
+                        <a th:href="@{/post/details/(postId=${post.postId},homeCurrPage=${page.currPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}">
+                            <h3>[[${post.postTitle}]]</h3>
+                        </a>
+                    </div>
+                    <div>
+                        <span th:text="${#dates.format(post.postCreatedDate, 'yyyy-MM-dd HH:mm')}"></span>
+                        <span class="badge" th:text="${'类别：'+post.category.categoryName}"></span>
+                        <span class="badge" th:text="${'回复：'+post.postCommentCount}"></span>
+                        <span class="badge" th:text="${'浏览：'+post.postHits}"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="text-center">
+            <th:block th:unless="${not #lists.isEmpty(posts)}">
+                该页数据为空，请返回
+                <a th:href="@{/user/perPost/(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                        aria-hidden="true">上一页</span>
+                </a>
+            </th:block><th:block th:if="${not #lists.isEmpty(posts)}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li>
+                        <a th:href="@{/user/perPost/(currPage=1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                           aria-label="Previous"> <span aria-hidden="true">首页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                        </a>
+                        <a th:href="@{/user/perPost/(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                           aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                    <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                        <li th:if="${ status.count} eq ${page.currPage}">
+                            <a th:href="@{/user/perPost/(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}" class="page-select">[[${ status.count}]]</a></li>
+                        <li th:unless="${ status.count} eq ${page.currPage}">
+                            <a th:href="@{/user/perPost/(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${ status.count}]]</a></li>
+                    </th:block>
+                    <li>
+                        <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                        <a th:href="@{/user/perPost/(currPage=${page.currPage}+1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                           th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/user/perPost/(currPage=${page.totalPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                           aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            </th:block>
+        </div>
+    </th:block>
+    <th:block th:unless="${page.totalCount}!=0">
+        <h3>暂无数据</h3>
+    </th:block>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>新帖子图表</title>
+</head>
+<body>
+<div id="main" style="width: 800px;height:600px;"></div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var myChart = echarts.init(document.getElementById('main'));
+        myChart.showLoading();
+        var names=[];
+        var values=[];
+        $.ajax({
+            type : "post",
+            async : true,
+            url : "[[@{/echarts/newPostEcharts}]]",
+            data : {},
+            dataType : "json",
+            success : function(result) {
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        names.push(result[i].name);
+                        values.push(result[i].num);
+                    }
+                    myChart.hideLoading();
+                    myChart.setOption({
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: names,
+                            axisLabel:{
+                                interval:0,
+                                rotate:45,
+                            }
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            data: values,
+                            type: 'line'
+                        }]
+                    });
+                }
+            },
+            error : function(errorMsg) {
+                alert("图表请求数据失败!");
+                myChart.hideLoading();
+            }
+        });
+    });
+</script>
+</body>
+</html>

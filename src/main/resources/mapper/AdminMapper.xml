@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.myforum_springboot.mapper.AdminMapper">
+    <delete id="postDelete" parameterType="Integer">
+        delete from t_post where post_id in
+        <foreach item="postId" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{postId}
+        </foreach>
+    </delete>
+
+    <update id="postNumReduce" parameterType="Map">
+        update t_category set category_post_count = category_post_count-#{num} where category_name = #{categoryName}
+    </update>
+
+    <delete id="commentDelete" parameterType="Integer">
+        delete from t_comment where comment_id in
+        <foreach item="commentId" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{commentId}
+        </foreach>
+    </delete>
+
+    <update id="commentNumReduce" parameterType="Map">
+        update t_post set post_comment_count=post_comment_count-#{num}
+        where post_id in(
+        select comment_post from t_comment where comment_id in
+        <foreach item="commentId" index="index" collection="id"
+                 open="(" separator="," close=")">
+            #{commentId}
+        </foreach>
+        )
+    </update>
+
+    <update id="userForbid" parameterType="int">
+        update t_user set user_flag=0 where user_id=#{userId}
+    </update>
+
+    <update id="relieveForbid" parameterType="int">
+        update t_user set user_flag=1 where user_id=#{userId}
+    </update>
+
+    <resultMap id="userList" type="user">
+        <id property="userId" column="user_id"></id>
+        <result property="userName" column="user_name"></result>
+        <result property="userEmail" column="user_email"></result>
+        <result property="userPortrait" column="user_portrait"></result>
+        <result property="userSignature" column="user_signature"></result>
+        <result property="userCreatedDate" column="user_created_date"></result>
+        <result property="userFlag" column="user_flag"></result>
+    </resultMap>
+    <select id="getUserList" parameterType="Map" resultMap="userList">
+        select * from t_user
+        <where>
+            <if test="queryUserName!=null and queryUserName!=''">
+                user_name like CONCAT('%',#{queryUserName},'%')
+            </if>
+        </where>
+        order by user_id ${orderType}
+            <if test="start!=null and size!=null">
+                limit #{start},#{size}
+            </if>
+    </select>
+
+    <select id="usersCount" parameterType="String" resultType="int">
+        select count(*) from t_user
+        <where>
+            <if test="queryUserName!=null and queryUserName!=''">
+                user_name like CONCAT('%',#{queryUserName},'%')
+            </if>
+        </where>
+    </select>
+
+    <delete id="userDelete" parameterType="int">
+        delete from t_user where user_id = #{id}
+    </delete>
+
+    <delete id="userDelPostDel" parameterType="int">
+        delete from t_post where post_user = #{id}
+    </delete>
+
+    <delete id="userDelCommentDel" parameterType="int">
+        delete from t_comment where comment_user = #{id}
+    </delete>
+
+    <update id="userDelPostReduce" parameterType="int">
+        update t_category set category_post_count = category_post_count-1 where category_id in
+        (select post_category from t_post where post_user = #{id})
+    </update>
+
+    <select id="getForbidList" parameterType="Map" resultMap="userList">
+        select * from t_user where user_flag = 0
+            <if test="queryUserName!=null and queryUserName!=''">
+                and user_name like CONCAT('%',#{queryUserName},'%')
+            </if>
+        order by user_id ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="forbidCount" parameterType="String" resultType="int">
+        select count(*) from t_user where user_flag = 0
+            <if test="queryUserName!=null and queryUserName!=''">
+                and user_name like CONCAT('%',#{queryUserName},'%')
+            </if>
+    </select>
+
+    <resultMap id="postList" type="post">
+        <id property="postId" column="post_id"></id>
+        <result property="postTitle" column="post_title"></result>
+        <result property="postBody" column="post_body"></result>
+        <result property="postCreatedDate" column="post_created_date"></result>
+        <result property="postHits" column="post_hits"></result>
+        <result property="postCommentCount" column="post_comment_count"></result>
+        <association property="category" javaType="category">
+            <result property="categoryName" column="category_name"></result>
+        </association>
+        <association property="user" javaType="user">
+            <result property="userName" column="user_name"></result>
+            <result property="userFlag" column="user_flag"></result>
+            <result property="userPortrait" column="user_portrait"></result>
+        </association>
+    </resultMap>
+    <select id="newPosts" parameterType="Map" resultMap="postList">
+        select p.*,u.user_name,u.user_flag,u.user_portrait,c.category_name from t_post p,t_user u,t_category c
+        where
+        p.post_user = u.user_id and p.post_category = c.category_id and
+        DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= p.post_created_date
+            <if test="queryPostTitle!=null and queryPostTitle!=''">
+                and p.post_title like CONCAT('%',#{queryPostTitle},'%')
+            </if>
+        order by post_id ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="newPostsCount" parameterType="String" resultType="int">
+        select count(*) from t_post
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= post_created_date
+            <if test="queryPostTitle!=null and queryPostTitle!=''">
+                and post_title like CONCAT('%',#{queryPostTitle},'%')
+            </if>
+    </select>
+
+    <resultMap id="categoryList" type="category">
+        <id property="categoryId" column="category_id"></id>
+        <result property="categoryName" column="category_name"></result>
+        <result property="categoryCreatedDate" column="category_created_date"></result>
+        <result property="categoryPostCount" column="category_post_count"></result>
+    </resultMap>
+    <select id="getCategoryByPage" parameterType="Map" resultMap="categoryList">
+        select * from t_category
+        <where>
+            <if test="queryCategoryName!=null and queryCategoryName!=''">
+                and category_name like CONCAT('%',#{queryCategoryName},'%')
+            </if>
+        </where>
+        order by category_id ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="categoryCount" parameterType="String" resultType="int">
+        select count(*) from t_category
+        <where>
+            <if test="queryCategoryName!=null and queryCategoryName!=''">
+                and category_name like CONCAT('%',#{queryCategoryName},'%')
+            </if>
+        </where>
+    </select>
+
+    <delete id="categoryDelete" parameterType="int">
+        delete from t_category where category_id=#{id}
+    </delete>
+
+    <delete id="categoryDelPostDel" parameterType="int">
+        delete from t_post where post_category=#{id}
+    </delete>
+
+    <delete id="categoryDelCommentDel" parameterType="int">
+        delete from t_comment where comment_post in (
+        select post_id from t_post where post_category=#{id}
+        )
+    </delete>
+
+    <insert id="categoryAdd" parameterType="category">
+        insert into t_category(category_name,category_created_date) values(#{categoryName},#{categoryCreatedDate})
+    </insert>
+
+    <select id="categoryExist" parameterType="category" resultType="int">
+        select count(*) from t_category where category_name = #{categoryName}
+    </select>
+</mapper>

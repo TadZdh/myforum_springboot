@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>登录</title>
+</head>
+<body>
+<div>
+    <div th:replace="fragments/header :: header"></div>
+    <div class="text-center" th:if="${param.loginError}">
+        <div class="alert alert-danger">
+            用户不存在或密码错误！
+        </div>
+    </div>
+    <div class="text-center" th:if="${param.logout}">
+        <div class="alert alert-info">
+            你已经退出登录！
+        </div>
+    </div>
+    <div class="container">
+        <div class="jumbotron login-jumbotron">
+            <div>
+                <h1>期待你加入我们的论坛!</h1>
+                <p>·注册新用户，以后你就是我们大家庭的一员</p>
+                <p>·登录后可以参与论坛的回复和发新帖子</p>
+                <p>·积极参与讨论和交流，提升自己的等级</p>
+                <p>·关注他人，一起进步</p>
+                <p>·发送优质帖子，获取更多粉丝</p>
+                <p>·请不要发与论坛无关的内容</p>
+                <p>·违纪会被加入小黑屋禁言</p>
+                <p>·祝大家玩得开心</p>
+                <div class="pull-right">
+                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
+                            data-target="#login">登录
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
+                            data-target="#register">注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="loginLabel">用户登录</h4>
+            </div>
+            <form th:action="@{/toLogin}" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="control-label">用户名:</label>
+                            <input type="text" class="form-control" name="username">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">密码:</label>
+                            <input type="password" class="form-control" name="password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">登录</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="register" tabindex="-1" role="dialog" aria-labelledby="registerLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="registerLabel">用户注册</h4>
+            </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label">用户名:</label>
+                        <input type="text" class="form-control" name="username" id="username">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">密码:</label>
+                        <input type="password" class="form-control" name="password" id="password">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">确认密码:</label>
+                        <input type="password" class="form-control" name="rePassword" id="rePassword">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">邮箱:</label>
+                        <input type="text" class="form-control" name="email" id="email">
+                    </div>
+                    <div th:replace="fragments/code :: code"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="doRegister()">注册</button>
+                </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function doRegister() {
+    var username = $("#username").val();
+    var password = $("#password").val();
+    var rePassword = $("#rePassword").val();
+    var email = $("#email").val();
+    var mycode = $('#mycode').val();
+    if (username == "") {
+        alert("用户名不能为空");
+    } else if (password == "") {
+        alert("密码不能为空");
+    } else if (rePassword == "") {
+        alert("确认密码不能为空");
+    } else if (email == "") {
+        alert("邮箱不能为空");
+    } else if (password != rePassword) {
+        alert("两次输入的密码不一致");
+    } else{
+        var param = {"userName":username,"userPassword":password,"userEmail":email,"code":mycode};
+        $.ajax({
+            url:"[[@{/userRegister}]]",
+            async:true,
+            type:"post",
+            data: JSON.stringify(param),
+            contentType:"application/json;charset=UTF-8",
+            dataType:"text",
+            success:function(data){
+                if(data>0){
+                    alert("注册成功！");
+                    window.location.reload();
+                }else if(data==-1){
+                    alert("该账号已存在！");
+                }else if(data==-2){
+                    alert("验证码错误！");
+                }else{
+                    alert("注册失败，请稍后再试");
+                }
+            },
+            error:function(){
+                alert("服务器繁忙");
+            }
+        });
+    }
+}
+function codeRefresh() {
+    var path = "/toGetCode?id=" + Math.random();
+    $("#codeImg").attr("src", path);
+}
+</script>
+</body>
+</html>

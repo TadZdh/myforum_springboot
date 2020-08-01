@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.myforum_springboot.mapper.UserMapper">
+
+    <insert id="postWrite" parameterType="Map">
+        insert into t_post(post_title,post_body,post_created_date,post_hits,post_comment_count,post_user,post_category)
+        values(#{post.postTitle},#{post.postBody},#{post.postCreatedDate},0,0,#{userId},#{categoryId})
+    </insert>
+
+    <update id="postAdd" parameterType="String">
+        update t_category set category_post_count = category_post_count+1 where category_id in
+        (select * from(select category_id from t_category where category_name = #{categoryName}) a)
+    </update>
+
+    <update id="postReduce" parameterType="int">
+        update t_category set category_post_count = category_post_count-1 where category_id in
+        (select post_category from t_post where post_id = #{id})
+    </update>
+
+    <insert id="commentReply" parameterType="comment">
+        insert into t_comment(comment_body,comment_created_date,comment_user,comment_post)
+        values(#{commentBody},#{commentCreatedDate},#{user.userId},#{post.postId})
+    </insert>
+
+    <update id="commentNumAdd" parameterType="comment">
+        update t_post set post_comment_count=post_comment_count+1 where post_id=#{post.postId}
+    </update>
+
+    <resultMap id="getCategory" type="category">
+        <id property="categoryId" column="category_id"></id>
+    </resultMap>
+    <select id="getCategoryByName" parameterType="category" resultMap="getCategory">
+        select category_id from t_category where category_name=#{categoryName}
+    </select>
+
+    <delete id="postDelete" parameterType="int">
+        delete from t_post where post_id=#{postId}
+    </delete>
+
+    <delete id="withCommentDel" parameterType="int">
+        delete from t_comment where comment_post=#{postId}
+    </delete>
+
+    <delete id="commentDelete" parameterType="int">
+        delete from t_comment where comment_id = #{commentId}
+    </delete>
+
+    <update id="commentNumReduce" parameterType="Map">
+        update t_post set post_comment_count=post_comment_count-#{num}
+        where post_id in(
+        select comment_post from t_comment where comment_id = #{commentId}
+        )
+    </update>
+
+    <update id="userUpdate" parameterType="user">
+        update t_user set user_signature=#{userSignature},user_email=#{userEmail} where user_name=#{userName}
+    </update>
+
+    <update id="fileUpload" parameterType="user">
+        update t_user set user_portrait=#{userPortrait} where user_id=#{userId}
+    </update>
+
+    <resultMap id="getPost" type="post">
+        <id property="postId" column="post_id"></id>
+        <result property="postTitle" column="post_title"></result>
+        <result property="postBody" column="post_body"></result>
+        <result property="postCreatedDate" column="post_created_date"></result>
+        <result property="postHits" column="post_hits"></result>
+        <result property="postCommentCount" column="post_comment_count"></result>
+        <association property="category" javaType="category">
+            <id property="categoryId" column="category_id"></id>
+            <result property="categoryName" column="category_name"></result>
+        </association>
+    </resultMap>
+    <select id="myPost" parameterType="Map" resultMap="getPost">
+        select p.*,c.category_id,c.category_name from t_post p,t_category c where
+        p.post_category=c.category_id and
+        <if test="queryPostTitle!=null and queryPostTitle!=''">
+            p.post_title like CONCAT('%',#{queryPostTitle},'%') and
+        </if>
+        p.post_user in (
+        select user_id from t_user where user_name=#{userName}
+        )
+        order by p.post_created_date ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="myPostCount" parameterType="Map" resultType="int">
+        select count(*) from t_post where
+        <if test="queryPostTitle!=null and queryPostTitle!=''">
+            post_title like CONCAT('%',#{queryPostTitle},'%') and
+        </if>
+        post_user in (
+        select user_id from t_user where user_name=#{userName}
+        )
+    </select>
+
+    <resultMap id="getComment" type="comment">
+        <id property="commentId" column="comment_id"></id>
+        <result property="commentBody" column="comment_body"></result>
+        <result property="commentCreatedDate" column="comment_created_date"></result>
+        <association property="post" javaType="post">
+            <id property="postId" column="post_id"></id>
+            <result property="postTitle" column="post_title"></result>
+            <result property="postBody" column="post_body"></result>
+            <result property="postCreatedDate" column="post_created_date"></result>
+            <result property="postHits" column="post_hits"></result>
+            <result property="postCommentCount" column="post_comment_count"></result>
+        </association>
+    </resultMap>
+    <select id="myComment" parameterType="Map" resultMap="getComment">
+        select c.*,p.* from t_comment c,t_post p where
+        c.comment_post=p.post_id and
+        <if test="commentBody!=null and commentBody!=''">
+            c.comment_body like CONCAT('%',#{commentBody},'%') and
+        </if>
+        c.comment_user in (
+        select user_id from t_user where user_name=#{userName}
+        )
+        order by c.comment_created_date ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="myCommentCount" parameterType="Map" resultType="int">
+        select count(*) from t_comment where
+        <if test="commentBody!=null and commentBody!=''">
+            comment_body like CONCAT('%',#{commentBody},'%') and
+        </if>
+        comment_user in (
+        select user_id from t_user where user_name=#{userName}
+        )
+    </select>
+
+    <update id="pwdUpdate" parameterType="user">
+        update t_user set user_password = #{userPassword} where user_name = #{userName}
+    </update>
+
+    <insert id="userFollow" parameterType="follow">
+        insert into t_follow(follow_from,follow_to,follow_date) values(#{followFrom},#{followTo},#{followDate})
+    </insert>
+
+    <delete id="userFollowDel" parameterType="follow">
+        delete from t_follow where follow_from = #{followFrom} and follow_to = #{followTo}
+    </delete>
+
+    <select id="hadFollow" parameterType="follow" resultType="int">
+        select count(*) from t_follow where follow_from = #{followFrom} and follow_to = #{followTo}
+    </select>
+
+    <select id="followCount" parameterType="int" resultType="int">
+        select count(*) from t_follow where follow_from = #{userId}
+    </select>
+
+    <select id="fansCount" parameterType="int" resultType="int">
+        select count(*) from t_follow where follow_to = #{userId}
+    </select>
+
+    <resultMap id="userList" type="user">
+        <id property="userId" column="user_id"></id>
+        <result property="userName" column="user_name"></result>
+        <result property="userEmail" column="user_email"></result>
+        <result property="userPortrait" column="user_portrait"></result>
+        <association property="follow" javaType="follow">
+            <id property="followId" column="follow_id"></id>
+            <result property="followDate" column="follow_date"></result>
+        </association>
+    </resultMap>
+    <select id="followList" parameterType="Map" resultMap="userList">
+        select u.*,f.follow_id,f.follow_date from t_user u,t_follow f
+        where user_id = follow_to and follow_from = #{userId}
+        <if test="queryUserName!=null and queryUserName!=''">
+            and u.user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
+        order by f.follow_date ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="fansList" parameterType="Map" resultMap="userList">
+        select u.*,f.follow_date from t_user u,t_follow f
+        where user_id = follow_from and follow_to = #{userId}
+        <if test="queryUserName!=null and queryUserName!=''">
+            and u.user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
+        order by f.follow_date ${orderType}
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="followListCount" parameterType="Map" resultType="int">
+        select count(*) from t_user u,t_follow f
+        where user_id = follow_to and follow_from = #{userId}
+        <if test="queryUserName!=null and queryUserName!=''">
+            and u.user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
+    </select>
+
+    <select id="fansListCount" parameterType="Map" resultType="int">
+        select count(*) from t_user u,t_follow f
+        where user_id = follow_from and follow_to = #{userId}
+        <if test="queryUserName!=null and queryUserName!=''">
+            and u.user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
+    </select>
+</mapper>

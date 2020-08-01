@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<body>
+<ul class="list-group list-custom-corner" th:fragment="postList">
+    <li class="list-group-item side-borderless last-border" th:each="post:${posts}">
+        <div class="media">
+            <div class="media-left media-middle text-center">
+                <th:block th:if="${not #strings.isEmpty(post.user.userPortrait)}">
+                    <img class="small-portrait" th:src="@{${post.user.userPortrait}}">
+                </th:block>
+                <th:block th:unless="${not #strings.isEmpty(post.user.userPortrait)}">
+                    <img class="small-portrait" th:src="@{/images/default_portrait.jpg}">
+                </th:block>
+                <a class="post-user"
+                   th:href="@{/user/otherInfo(userName=${post.user.userName})}"
+                   th:text="${post.user.userName}"></a>
+            </div>
+            <div class="media-body">
+                <div class="media-heading">
+                    <a class="post-title" th:href="@{/post/details(postId=${post.postId},homeCurrPage=${page.currPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}">
+                        <h3>[[${post.postTitle}]]</h3>
+                    </a>
+                </div>
+                <div class="post-info">
+                    <span class="post-date" th:text="${#dates.format(post.postCreatedDate, 'yyyy-MM-dd HH:mm')}"></span>
+                    <span class="badge" th:text="${'类别：'+post.category.categoryName}"></span>
+                    <span class="badge" th:text="${'回复：'+post.postCommentCount}"></span>
+                    <span class="badge" th:text="${'浏览：'+post.postHits}"></span>
+                </div>
+            </div>
+            <div class="media-right media-middle" sec:authorize="hasAuthority('admin')">
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="check" name="check" th:value="${post.postId }">
+                </label>
+            </div>
+        </div>
+    </li>
+</ul>
+</body>
+</html>

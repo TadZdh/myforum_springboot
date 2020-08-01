@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="code">
+    <label class="control-label">验证码:
+        <img th:src="@{/toGetCode}" height="20" width="60" id="codeImg">
+        <button onclick="codeRefresh()">刷新验证码</button>
+    </label>
+    <input type="text" class="form-control" id="mycode" placeholder="请输入正确的验证码">
+</div>
+</body>
+</html>

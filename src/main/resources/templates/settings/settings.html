@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/head :: head">
+    <title>设置</title>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation" class="li-border" data-src="/user/perInfo">
+                    <a href="#">基础资料</a>
+                </li>
+                <li role="presentation" class="li-border" data-src="/user/perPost">
+                    <a href="#">个人帖子</a>
+                </li>
+                <li role="presentation" class="li-border" data-src="/user/perComment">
+                    <a href="#">个人回复</a>
+                </li>
+                <li role="presentation" class="li-border" data-src="/user/myFollow">
+                    <a href="#">我的关注</a>
+                </li>
+                <li role="presentation" class="li-border" data-src="/user/myFans">
+                    <a href="#">我的粉丝</a>
+                </li>
+                <li role="presentation" class="li-border" data-src="/user/changePassword">
+                    <a href="#">修改密码</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <iframe frameborder="0" scrolling="yes" class="my-frame" src=""></iframe>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("li").on("click",function(){
+            var address =$(this).attr("data-src");
+            $("iframe").attr("src",address);
+        });
+    });
+</script>
+</body>
+</html>
