@@ -25,8 +25,6 @@ public class AdminController {
         List<Integer> deleteId = (List<Integer>) s.get("deleteId");
         String categoryName = (String) s.get("categoryName");
         if(deleteId!=null&&deleteId.size()!=0){
-            if(adminService.postNumReduce(deleteId.size(),categoryName)<=0)
-                return 0;
             return adminService.postDelete(deleteId);
         }
         return 0;
@@ -43,18 +41,18 @@ public class AdminController {
 
     @PostMapping("/userForbid")
     @ResponseBody
-    public int userForbid(@RequestBody int id){
-        if(id<=0)
+    public int userForbid(@RequestBody Object userName){
+        if(userName.equals(""))
             return 0;
-        return adminService.userForbid(id);
+        return adminService.userForbid((String) userName);
     }
 
     @PostMapping("/relieveForbid")
     @ResponseBody
-    public int relieveForbid(@RequestBody int id){
-        if(id<=0)
+    public int relieveForbid(@RequestBody Object userName){
+        if(userName.equals(""))
             return 0;
-        return adminService.relieveForbid(id);
+        return adminService.relieveForbid((String) userName);
     }
 
     @GetMapping("/userList")
@@ -78,14 +76,14 @@ public class AdminController {
 
     @PostMapping("/userDelete")
     @ResponseBody
-    public int userDelete(@RequestBody int id){
-        if(id<=0)
+    public int userDelete(@RequestBody Object userName){
+        if(userName.equals(""))
             return 0;
-        int result = adminService.postCommentDel(id);
+        int result = adminService.postCommentDel((String) userName);
         if (result <= 0) {
             return 0;
         }
-        return adminService.userDelete(id);
+        return adminService.userDelete((String) userName);
     }
 
     @GetMapping("/forbidList")
@@ -130,6 +128,9 @@ public class AdminController {
             Model model){
         HashMap<String,Object> map = adminService.getCategoryByPage(currPage,orderType,queryCategoryName);
         List<Category> categorys = (List<Category>) map.get("category");
+        for(Category category : categorys){
+            category.setCategoryPostCount(adminService.postCount(category.getCategoryId()));
+        }
         Page page = (Page) map.get("page");
         model.addAttribute("categorys",categorys);
         model.addAttribute("page",page);

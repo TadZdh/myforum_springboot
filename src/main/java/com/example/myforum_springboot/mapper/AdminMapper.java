@@ -4,6 +4,7 @@ import com.example.myforum_springboot.domain.Category;
 import com.example.myforum_springboot.domain.Post;
 import com.example.myforum_springboot.domain.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +18,6 @@ public interface AdminMapper {
     int postDelete(List<Integer> id);
 
     /**
-     * 帖子数量-n
-     */
-    int postNumReduce(HashMap<String,Object> map);
-
-    /**
-     * 帖子回复数量-n
-     */
-    int commentNumReduce(HashMap<String,Object> map);
-
-    /**
      * 批量删除回复
      */
     int commentDelete(List<Integer> id);
@@ -34,12 +25,12 @@ public interface AdminMapper {
     /**
      * 给用户禁言
      */
-    int userForbid(int id);
+    int userForbid(String userName);
 
     /**
      * 解除禁言
      */
-    int relieveForbid(int id);
+    int relieveForbid(String userName);
 
     /**
      * 查询所有用户信息
@@ -54,22 +45,32 @@ public interface AdminMapper {
     /**
      * 注销用户
      */
-    int userDelete(int id);
+    int userDelete(String userName);
+
+    /**
+     * 删除被注销用户的关注信息
+     */
+    int userFollowDel(String userName);
+
+    /**
+     * 查询被注销用户发布的帖子的数量
+     */
+    int userDelPostCount(String userName);
 
     /**
      * 删除被注销用户发布的帖子
      */
-    int userDelPostDel(int id);
+    int userDelPostDel(String userName);
+
+    /**
+     * 查询被注销用户的所有回复的数量
+     */
+    int userDelCommentCount(String userName);
 
     /**
      * 删除被注销用户的所有回复
      */
-    int userDelCommentDel(int id);
-
-    /**
-     * 删除被注销用户发布的帖子的数量
-     */
-    int userDelPostReduce(int id);
+    int userDelCommentDel(String userName);
 
     /**
      * 查询所有的禁言用户
@@ -95,6 +96,11 @@ public interface AdminMapper {
      * 所有类别信息
      */
     List<Category> getCategoryByPage(HashMap<String,Object> map);
+
+    /**
+     * 查询每个分类下的帖子数量
+     */
+    long postCount(int categoryId);
 
     /**
      * 所有类别数量

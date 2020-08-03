@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.myforum_springboot.mapper.AdminMapper">
-    <delete id="postDelete" parameterType="Integer">
+    <delete id="postDelete" parameterType="int">
         delete from t_post where post_id in
         <foreach item="postId" index="index" collection="list"
                  open="(" separator="," close=")">
@@ -10,91 +10,79 @@
         </foreach>
     </delete>
 
-    <update id="postNumReduce" parameterType="Map">
-        update t_category set category_post_count = category_post_count-#{num} where category_name = #{categoryName}
-    </update>
-
-    <delete id="commentDelete" parameterType="Integer">
-        delete from t_comment where comment_id in
-        <foreach item="commentId" index="index" collection="list"
+    <delete id="commentDelete" parameterType="int">
+        delete from t_comment where comment_post in
+        <foreach item="postId" index="index" collection="list"
                  open="(" separator="," close=")">
-            #{commentId}
+            #{postId}
         </foreach>
     </delete>
 
-    <update id="commentNumReduce" parameterType="Map">
-        update t_post set post_comment_count=post_comment_count-#{num}
-        where post_id in(
-        select comment_post from t_comment where comment_id in
-        <foreach item="commentId" index="index" collection="id"
-                 open="(" separator="," close=")">
-            #{commentId}
-        </foreach>
-        )
+    <update id="userForbid" parameterType="String">
+        update t_user set user_flag=0 where user_name=#{userName}
     </update>
 
-    <update id="userForbid" parameterType="int">
-        update t_user set user_flag=0 where user_id=#{userId}
-    </update>
-
-    <update id="relieveForbid" parameterType="int">
-        update t_user set user_flag=1 where user_id=#{userId}
+    <update id="relieveForbid" parameterType="String">
+        update t_user set user_flag=1 where user_name=#{userName}
     </update>
 
     <resultMap id="userList" type="user">
-        <id property="userId" column="user_id"></id>
-        <result property="userName" column="user_name"></result>
+        <id property="userName" column="user_name"></id>
         <result property="userEmail" column="user_email"></result>
         <result property="userPortrait" column="user_portrait"></result>
         <result property="userSignature" column="user_signature"></result>
         <result property="userCreatedDate" column="user_created_date"></result>
+        <result property="userLoginDate" column="user_login_date"></result>
         <result property="userFlag" column="user_flag"></result>
     </resultMap>
     <select id="getUserList" parameterType="Map" resultMap="userList">
-        select * from t_user
-        <where>
+        select * from t_user where user_role = 'user'
             <if test="queryUserName!=null and queryUserName!=''">
-                user_name like CONCAT('%',#{queryUserName},'%')
+                and user_name like CONCAT('%',#{queryUserName},'%')
             </if>
-        </where>
-        order by user_id ${orderType}
+        order by user_created_date ${orderType}
             <if test="start!=null and size!=null">
                 limit #{start},#{size}
             </if>
     </select>
 
     <select id="usersCount" parameterType="String" resultType="int">
-        select count(*) from t_user
-        <where>
+        select count(*) from t_user where user_role = 'user'
             <if test="queryUserName!=null and queryUserName!=''">
                 user_name like CONCAT('%',#{queryUserName},'%')
             </if>
-        </where>
     </select>
 
-    <delete id="userDelete" parameterType="int">
-        delete from t_user where user_id = #{id}
+    <delete id="userDelete" parameterType="String">
+        delete from t_user where user_name = #{userName}
     </delete>
 
-    <delete id="userDelPostDel" parameterType="int">
-        delete from t_post where post_user = #{id}
+    <delete id="userFollowDel" parameterType="String">
+        delete from t_follow where follow_from = #{userName} or follow_to = #{userName}
     </delete>
 
-    <delete id="userDelCommentDel" parameterType="int">
-        delete from t_comment where comment_user = #{id}
+    <select id="userDelPostCount" parameterType="String" resultType="int">
+        select count(*) from t_post where post_user = #{userName}
+    </select>
+
+    <delete id="userDelPostDel" parameterType="String">
+        delete from t_post where post_user = #{userName}
     </delete>
 
-    <update id="userDelPostReduce" parameterType="int">
-        update t_category set category_post_count = category_post_count-1 where category_id in
-        (select post_category from t_post where post_user = #{id})
-    </update>
+    <select id="userDelCommentCount" parameterType="String" resultType="int">
+        select count(*) from t_comment where comment_user = #{userName}
+    </select>
+
+    <delete id="userDelCommentDel" parameterType="String">
+        delete from t_comment where comment_user = #{userName}
+    </delete>
 
     <select id="getForbidList" parameterType="Map" resultMap="userList">
         select * from t_user where user_flag = 0
             <if test="queryUserName!=null and queryUserName!=''">
                 and user_name like CONCAT('%',#{queryUserName},'%')
             </if>
-        order by user_id ${orderType}
+        order by user_created_date ${orderType}
         <if test="start!=null and size!=null">
             limit #{start},#{size}
         </if>
@@ -113,12 +101,11 @@
         <result property="postBody" column="post_body"></result>
         <result property="postCreatedDate" column="post_created_date"></result>
         <result property="postHits" column="post_hits"></result>
-        <result property="postCommentCount" column="post_comment_count"></result>
         <association property="category" javaType="category">
             <result property="categoryName" column="category_name"></result>
         </association>
         <association property="user" javaType="user">
-            <result property="userName" column="user_name"></result>
+            <id property="userName" column="user_name"></id>
             <result property="userFlag" column="user_flag"></result>
             <result property="userPortrait" column="user_portrait"></result>
         </association>
@@ -126,12 +113,12 @@
     <select id="newPosts" parameterType="Map" resultMap="postList">
         select p.*,u.user_name,u.user_flag,u.user_portrait,c.category_name from t_post p,t_user u,t_category c
         where
-        p.post_user = u.user_id and p.post_category = c.category_id and
+        p.post_user = u.user_name and p.post_category = c.category_id and
         DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= p.post_created_date
             <if test="queryPostTitle!=null and queryPostTitle!=''">
                 and p.post_title like CONCAT('%',#{queryPostTitle},'%')
             </if>
-        order by post_id ${orderType}
+        order by post_created_date ${orderType}
         <if test="start!=null and size!=null">
             limit #{start},#{size}
         </if>
@@ -149,7 +136,6 @@
         <id property="categoryId" column="category_id"></id>
         <result property="categoryName" column="category_name"></result>
         <result property="categoryCreatedDate" column="category_created_date"></result>
-        <result property="categoryPostCount" column="category_post_count"></result>
     </resultMap>
     <select id="getCategoryByPage" parameterType="Map" resultMap="categoryList">
         select * from t_category
@@ -158,10 +144,14 @@
                 and category_name like CONCAT('%',#{queryCategoryName},'%')
             </if>
         </where>
-        order by category_id ${orderType}
+        order by category_created_date ${orderType}
         <if test="start!=null and size!=null">
             limit #{start},#{size}
         </if>
+    </select>
+
+    <select id="postCount" parameterType="int" resultType="long">
+        select count(*) from t_post where post_category = #{categoryId};
     </select>
 
     <select id="categoryCount" parameterType="String" resultType="int">

@@ -20,9 +20,14 @@ public interface PostService {
     HashMap<String,Object> getPostsByPage(int currPage, Category category, String orderType, String queryPostTitle);
 
     /**
+     * 查询该帖子的回复数量
+     */
+    long commentCount(int postId);
+
+    /**
      * 发帖子
      */
-    int postSend(int userId,Post post,Category category);
+    int postSend(String userName,Post post,Category category);
 
     /**
      * 帖子详情
@@ -32,5 +37,5 @@ public interface PostService {
     /**
      * 查询某帖子的所有回复
      */
-    HashMap<String,Object> getCommentsByPage(int currPage, Post post, int userId);
+    HashMap<String,Object> getCommentsByPage(int currPage, Post post, String userName);
 }

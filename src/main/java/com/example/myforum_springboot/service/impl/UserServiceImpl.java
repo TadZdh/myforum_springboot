@@ -7,19 +7,25 @@ import com.example.myforum_springboot.service.UserService;
 import com.example.myforum_springboot.utils.FileUtils;
 import com.example.myforum_springboot.utils.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
+@Transactional(propagation= Propagation.REQUIRED,isolation= Isolation.DEFAULT,readOnly=false)
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -28,54 +34,45 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private LoginMapper loginMapper;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     public int postWrite(Post post,User user) {
         post.setPostCreatedDate(new Date());
         Category category = userMapper.getCategoryByName(post.getCategory().getCategoryName());
         HashMap<String,Object> map = new HashMap<>();
         map.put("post",post);
-        map.put("userId",user.getUserId());
+        map.put("userName",user.getUserName());
         map.put("categoryId",category.getCategoryId());
-        int addResult = userMapper.postAdd(post.getCategory().getCategoryName());
-        int writeResult = userMapper.postWrite(map);
-        try {
-            if (addResult <= 0 && writeResult <= 0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
-        }
-        return writeResult;
+        return userMapper.postWrite(map);
     }
 
     @Override
     public int commentReply(Comment comment) {
         comment.setCommentCreatedDate(new Date());
-        int replyResult = userMapper.commentReply(comment);
-        int addResult = userMapper.commentNumAdd(comment);
-        try {
-            if (replyResult <= 0 && addResult <= 0) {
-                throw new Exception();
+        int result = userMapper.commentReply(comment);
+        if(result>0){
+            Object obj = redisTemplate.opsForValue().get("commentCount_postId_"+comment.getPost().getPostId());
+            if(obj!=null) {
+                long count = Long.parseLong(obj.toString());
+                redisTemplate.opsForValue().set("commentCount_postId_" + comment.getPost().getPostId(), count + 1L);
             }
-        }catch (Exception e){
-            return 0;
         }
-        return 1;
+        return result;
     }
 
     @Override
     public int postDelete(int postId) {
-        int commentResult = this.userMapper.withCommentDel(postId);
-        int reduceResult = this.userMapper.postReduce(postId);
-        int delResult = this.userMapper.postDelete(postId);
-        try {
-            if (commentResult <= 0 && delResult <= 0 && reduceResult<=0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
+        int commentCount = userMapper.commentDelCount(postId);
+        if(commentCount>0){
+            int commentResult = this.userMapper.withCommentDel(postId);
         }
-        return 1;
+        int delResult = this.userMapper.postDelete(postId);
+        if(delResult>0){
+            redisTemplate.delete("commentCount_postId_"+postId);
+        }
+        return delResult;
     }
 
     @Override
@@ -83,29 +80,27 @@ public class UserServiceImpl implements UserService {
         HashMap<String,Object> map = new HashMap<>();
         map.put("num",1);
         map.put("commentId",commentId);
-        int reduceResult = this.userMapper.commentNumReduce(map);
-        int delResult = this.userMapper.commentDelete(commentId);
-        try {
-            if (reduceResult <= 0 && delResult <= 0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
+        int result = userMapper.commentDelete(commentId);
+        if(result>0){
+            Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
+            redisTemplate.delete(keys);
         }
-        return 1;
+        return result;
     }
 
     @Override
     public int userUpdate(User user) {
-        return this.userMapper.userUpdate(user);
+        int result = userMapper.userUpdate(user);
+        if(result>0)
+            redisTemplate.delete("getUser_"+user.getUserName());
+        return result;
     }
 
     @Override
     public int fileUpload(HttpServletRequest request, MultipartFile photo,User user) {
         String beforeImg = user.getUserPortrait();
-        boolean flag = true;
         if(beforeImg!=null){
-            flag = FileUtils.deleteImgFile(beforeImg);
+            FileUtils.deleteImgFile(beforeImg);
         }
         String img = FileUtils.uploadImgFile(request, photo);
         if(img.equals("非图片类型"))
@@ -114,13 +109,7 @@ public class UserServiceImpl implements UserService {
             return -2;
         user.setUserPortrait(img);
         int uploadResult = userMapper.fileUpload(user);
-        try {
-            if (!flag && uploadResult <= 0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
-        }
+        redisTemplate.delete("getUser_"+user.getUserName());
         return 1;
     }
 
@@ -167,57 +156,66 @@ public class UserServiceImpl implements UserService {
     @Override
     public int pwdUpdate(User user) {
         user.setUserName(SecurityContextHolder.getContext().getAuthentication().getName());
-        return userMapper.pwdUpdate(user);
+        int result = userMapper.pwdUpdate(user);
+        if(result>0)
+            redisTemplate.delete("getUser_"+user.getUserName());
+        return result;
     }
 
     @Override
-    public int userFollow(int toId) {
+    public int userFollow(String userName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = loginMapper.findByUserName(myName);
         Follow follow = new Follow();
-        follow.setFollowFrom(user.getUserId());
-        follow.setFollowTo(toId);
+        follow.setFollowFrom(myName);
+        follow.setFollowTo(userName);
         follow.setFollowDate(new Date());
-        return userMapper.userFollow(follow);
+        int result = userMapper.userFollow(follow);
+/*        if(result>0) {
+            redisTemplate.delete("getUser_" + myName);
+            redisTemplate.delete("getUser_" + userName);
+        }*/
+        return result;
     }
 
     @Override
-    public int userFollowDel(int toId) {
+    public int userFollowDel(String userName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = loginMapper.findByUserName(myName);
         Follow follow = new Follow();
-        follow.setFollowFrom(user.getUserId());
-        follow.setFollowTo(toId);
-        return userMapper.userFollowDel(follow);
+        follow.setFollowFrom(myName);
+        follow.setFollowTo(userName);
+        int result = userMapper.userFollowDel(follow);
+/*        if(result>0) {
+            redisTemplate.delete("getUser_" + myName);
+            redisTemplate.delete("getUser_" + userName);
+        }*/
+        return result;
     }
 
     @Override
-    public int hadFollow(int toId) {
+    public int hadFollow(String userName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = loginMapper.findByUserName(myName);
         Follow follow = new Follow();
-        follow.setFollowFrom(user.getUserId());
-        follow.setFollowTo(toId);
+        follow.setFollowFrom(myName);
+        follow.setFollowTo(userName);
         return userMapper.hadFollow(follow);
     }
 
     @Override
-    public int followCount(int userId) {
-        return userMapper.followCount(userId);
+    public int followCount(String userName) {
+        return userMapper.followCount(userName);
     }
 
     @Override
-    public int fansCount(int userId) {
-        return userMapper.fansCount(userId);
+    public int fansCount(String userName) {
+        return userMapper.fansCount(userName);
     }
 
     @Override
     public HashMap<String, Object> followList(int currPage, String orderType, String queryUserName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = loginMapper.findByUserName(myName);
         HashMap<String,Object> map = new HashMap<>();
         HashMap<String,Object> map2 = new HashMap<>();
-        map2.put("userId",user.getUserId());
+        map2.put("userName",myName);
         map2.put("queryUserName",queryUserName);
         int totalCount = userMapper.followListCount(map2);
         Page page = PageUtils.pageHandle(currPage,totalCount);
@@ -225,7 +223,7 @@ public class UserServiceImpl implements UserService {
         map.put("size",page.getPageSize());
         map.put("orderType",orderType);
         map.put("queryUserName",queryUserName);
-        map.put("userId",user.getUserId());
+        map.put("userName",myName);
         HashMap<String,Object> map3 = new HashMap<>();
         List<User> users = userMapper.followList(map);
         map3.put("page",page);
@@ -236,10 +234,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public HashMap<String, Object> fansList(int currPage, String orderType, String queryUserName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = loginMapper.findByUserName(myName);
         HashMap<String,Object> map = new HashMap<>();
         HashMap<String,Object> map2 = new HashMap<>();
-        map2.put("userId",user.getUserId());
+        map2.put("userName",myName);
         map2.put("queryUserName",queryUserName);
         int totalCount = userMapper.fansListCount(map2);
         Page page = PageUtils.pageHandle(currPage,totalCount);
@@ -247,7 +244,7 @@ public class UserServiceImpl implements UserService {
         map.put("size",page.getPageSize());
         map.put("orderType",orderType);
         map.put("queryUserName",queryUserName);
-        map.put("userId",user.getUserId());
+        map.put("userName",myName);
         HashMap<String,Object> map3 = new HashMap<>();
         List<User> users = userMapper.fansList(map);
         map3.put("page",page);

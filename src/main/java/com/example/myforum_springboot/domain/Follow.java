@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class Follow {
     private int followId;
-    private int followFrom;
-    private int followTo;
+    private String followFrom;
+    private String followTo;
     private Date followDate;
 
     public int getFollowId() {
@@ -16,19 +16,19 @@ public class Follow {
         this.followId = followId;
     }
 
-    public int getFollowFrom() {
+    public String getFollowFrom() {
         return followFrom;
     }
 
-    public void setFollowFrom(int followFrom) {
+    public void setFollowFrom(String followFrom) {
         this.followFrom = followFrom;
     }
 
-    public int getFollowTo() {
+    public String getFollowTo() {
         return followTo;
     }
 
-    public void setFollowTo(int followTo) {
+    public void setFollowTo(String followTo) {
         this.followTo = followTo;
     }
 
@@ -44,8 +44,8 @@ public class Follow {
     public String toString() {
         return "Follow{" +
                 "followId=" + followId +
-                ", followFrom=" + followFrom +
-                ", followTo=" + followTo +
+                ", followFrom='" + followFrom + '\'' +
+                ", followTo='" + followTo + '\'' +
                 ", followDate=" + followDate +
                 '}';
     }

@@ -61,27 +61,27 @@ public interface UserService {
     /**
      * 关注他人
      */
-    int userFollow(int toId);
+    int userFollow(String userName);
 
     /**
      * 解除关注他人
      */
-    int userFollowDel(int toId);
+    int userFollowDel(String userName);
 
     /**
      * 查询有无关注过此人
      */
-    int hadFollow(int toId);
+    int hadFollow(String userName);
 
     /**
      * 查询关注数量
      */
-    int followCount(int userId);
+    int followCount(String userName);
 
     /**
      * 查询粉丝数量
      */
-    int fansCount(int userId);
+    int fansCount(String userName);
 
     /**
      * 我的关注列表信息

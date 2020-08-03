@@ -15,16 +15,6 @@ public interface UserMapper {
     int postWrite(HashMap<String,Object> map);
 
     /**
-     * 帖子数量+1
-     */
-    int postAdd(String categoryName);
-
-    /**
-     * 帖子数量-1
-     */
-    int postReduce(int id);
-
-    /**
      * 根据类别名称查询其信息
      */
     Category getCategoryByName(String categoryName);
@@ -33,16 +23,6 @@ public interface UserMapper {
      * 用户回复帖子
      */
     int commentReply(Comment comment);
-
-    /**
-     * 帖子回复数量+1
-     */
-    int commentNumAdd(Comment comment);
-
-    /**
-     * 帖子回复数量-n
-     */
-    int commentNumReduce(HashMap<String,Object> map);
 
     /**
      * 批量删除自己的帖子
@@ -55,7 +35,12 @@ public interface UserMapper {
     int postDelete(int postId);
 
     /**
-     * 删除与被删帖子相关的回复
+     * 查询被删帖子相关的回复的数量
+     */
+    int commentDelCount(int postId);
+
+    /**
+     * 删除被删帖子相关的回复
      */
     int withCommentDel(int postId);
 
@@ -117,12 +102,12 @@ public interface UserMapper {
     /**
      * 查询关注数量
      */
-    int followCount(int userId);
+    int followCount(String userName);
 
     /**
      * 查询粉丝数量
      */
-    int fansCount(int userId);
+    int fansCount(String userName);
 
     /**
      * 我的关注列表信息

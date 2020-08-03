@@ -6,10 +6,14 @@
     <resultMap id="categoryList" type="category">
         <id property="categoryId" column="category_id"></id>
         <result property="categoryName" column="category_name"></result>
-        <result property="categoryPostCount" column="category_post_count"></result>
+        <result property="categoryCreatedDate" column="category_created_date"></result>
     </resultMap>
     <select id="categoryList" resultMap="categoryList">
-        select category_id,category_name,category_post_count from t_category
+        select * from t_category
+    </select>
+
+    <select id="postCount" parameterType="int" resultType="int">
+        select count(*) from t_post where post_category = #{categoryId}
     </select>
 
     <select id="inactiveUserCount" resultType="int">

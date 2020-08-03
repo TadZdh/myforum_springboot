@@ -9,41 +9,39 @@ import com.example.myforum_springboot.mapper.LoginMapper;
 import com.example.myforum_springboot.service.AdminService;
 import com.example.myforum_springboot.utils.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
+@Transactional(propagation= Propagation.REQUIRED,isolation= Isolation.DEFAULT,readOnly=false)
 public class AdminServiceImpl implements AdminService {
     @Autowired
     private AdminMapper adminMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public int postDelete(List<Integer> id) {
         int commentResult = adminMapper.commentDelete(id);
         int postResult = adminMapper.postDelete(id);
-        try {
-            if (commentResult <= 0 && postResult <= 0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
+        if(postResult>0){
+            Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
+            redisTemplate.delete(keys);
         }
         return postResult;
-    }
-
-    @Override
-    public int postNumReduce(int num, String categoryName) {
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("num",num);
-        map.put("categoryName",categoryName);
-        return adminMapper.postNumReduce(map);
     }
 
     @Override
@@ -51,26 +49,30 @@ public class AdminServiceImpl implements AdminService {
         HashMap<String,Object> map = new HashMap<>();
         map.put("num",id.size());
         map.put("id",id);
-        int reduceResult = this.adminMapper.commentNumReduce(map);
         int delResult = this.adminMapper.commentDelete(id);
-        try {
-            if (reduceResult <= 0 && delResult <= 0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
+        if(delResult>0){
+            Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
+            redisTemplate.delete(keys);
         }
         return delResult;
     }
 
     @Override
-    public int userForbid(int id) {
-        return this.adminMapper.userForbid(id);
+    public int userForbid(String userName) {
+        int result = adminMapper.userForbid(userName);
+        if(result>0){
+            redisTemplate.delete("getUser_" + userName);
+        }
+        return result;
     }
 
     @Override
-    public int relieveForbid(int id) {
-        return this.adminMapper.relieveForbid(id);
+    public int relieveForbid(String userName) {
+        int result = adminMapper.relieveForbid(userName);
+        if(result>0){
+            redisTemplate.delete("getUser_" + userName);
+        }
+        return result;
     }
 
     @Override
@@ -90,23 +92,34 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public int userDelete(int id) {
-        return adminMapper.userDelete(id);
+    public int userDelete(String userName) {
+        int follow = adminMapper.userFollowDel(userName);
+        int result = adminMapper.userDelete(userName);
+        if(result>0){
+            redisTemplate.delete("getUser_" + userName);
+        }
+        return result;
     }
 
     @Override
-    public int postCommentDel(int id) {
-        int reduceResult = adminMapper.userDelPostReduce(id);
-        int commentResult = adminMapper.userDelCommentDel(id);
-        int postResult = adminMapper.userDelPostDel(id);
-        try {
-            if (postResult<=0&&commentResult<=0&&reduceResult<=0) {
-                throw new Exception();
+    public int postCommentDel(String userName) {
+        int commentCount = adminMapper.userDelCommentCount(userName);
+        if(commentCount>0) {
+            int commentResult = adminMapper.userDelCommentDel(userName);
+            if(commentResult>0){
+                Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
+                redisTemplate.delete(keys);
             }
-        }catch (Exception e){
-            return 0;
         }
-        return postResult;
+        int postCount = adminMapper.userDelPostCount(userName);
+        if(postCount>0) {
+            int postResult = adminMapper.userDelPostDel(userName);
+            if(postResult>0){
+                Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
+                redisTemplate.delete(keys);
+            }
+        }
+        return 1;
     }
 
     @Override
@@ -158,16 +171,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public long postCount(int categoryId) {
+        return adminMapper.postCount(categoryId);
+    }
+
+    @Override
     public int categoryDelete(int id) {
         int commentResult = adminMapper.categoryDelCommentDel(id);
         int postResult = adminMapper.categoryDelPostDel(id);
         int categoryResult = adminMapper.categoryDelete(id);
-        try {
-            if (postResult<=0&&commentResult<=0&&categoryResult<=0) {
-                throw new Exception();
-            }
-        }catch (Exception e){
-            return 0;
+        if(categoryResult>0){
+            Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
+            redisTemplate.delete(keys);
+            redisTemplate.delete("categoryList");
         }
         return categoryResult;
     }
@@ -179,6 +195,10 @@ public class AdminServiceImpl implements AdminService {
             return -2;
         }
         category.setCategoryCreatedDate(new Date());
-        return this.adminMapper.categoryAdd(category);
+        int result = adminMapper.categoryAdd(category);
+        if(result>0){
+            redisTemplate.delete("categoryList");
+        }
+        return result;
     }
 }

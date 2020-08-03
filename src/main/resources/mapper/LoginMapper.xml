@@ -3,13 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.myforum_springboot.mapper.LoginMapper">
     <resultMap id="getUser" type="user">
-        <id property="userId" column="user_id"></id>
-        <result property="userName" column="user_name"></result>
+        <id property="userName" column="user_name"></id>
         <result property="userPassword" column="user_password"></result>
         <result property="userPortrait" column="user_portrait"></result>
         <result property="userSignature" column="user_signature"></result>
         <result property="userEmail" column="user_email"></result>
         <result property="userCreatedDate" column="user_created_date"></result>
+        <result property="userLoginDate" column="user_login_date"></result>
         <result property="userRole" column="user_role"></result>
         <result property="userFlag" column="user_flag"></result>
     </resultMap>
@@ -18,7 +18,7 @@
     </select>
 
     <select id="findAuthoritiesByUsername" parameterType="String" resultMap="getUser">
-        select * from t_user where user_name=#{userName}
+        select user_role from t_user where user_name=#{userName}
     </select>
 
     <insert id="userRegister" parameterType="user">

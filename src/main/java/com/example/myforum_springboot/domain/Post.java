@@ -10,9 +10,9 @@ public class Post {
     private String postBody;
     private Date postCreatedDate;
     private long postHits;
-    private long postCommentCount;
     private User user;
     private Category category;
+    private long postCommentCount;
 
     public int getPostId() {
         return postId;
@@ -54,14 +54,6 @@ public class Post {
         this.postHits = postHits;
     }
 
-    public long getPostCommentCount() {
-        return postCommentCount;
-    }
-
-    public void setPostCommentCount(long postCommentCount) {
-        this.postCommentCount = postCommentCount;
-    }
-
     public User getUser() {
         return user;
     }
@@ -78,6 +70,14 @@ public class Post {
         this.category = category;
     }
 
+    public long getPostCommentCount() {
+        return postCommentCount;
+    }
+
+    public void setPostCommentCount(long postCommentCount) {
+        this.postCommentCount = postCommentCount;
+    }
+
     @Override
     public String toString() {
         return "Post{" +
@@ -86,9 +86,9 @@ public class Post {
                 ", postBody='" + postBody + '\'' +
                 ", postCreatedDate=" + postCreatedDate +
                 ", postHits=" + postHits +
-                ", postCommentCount=" + postCommentCount +
                 ", user=" + user +
                 ", category=" + category +
+                ", postCommentCount=" + postCommentCount +
                 '}';
     }
 }

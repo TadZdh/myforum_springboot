@@ -49,7 +49,7 @@ public class UserController {
     @ResponseBody
     public int commentReply(HttpServletRequest request,@RequestBody HashMap<String,Object> map){
         User user = new User();
-        user.setUserId((Integer) map.get("userId"));
+        user.setUserName((String) map.get("userName"));
         Post post = new Post();
         post.setPostId((Integer) map.get("postId"));
         Comment comment = new Comment();
@@ -79,8 +79,8 @@ public class UserController {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = loginService.getUser(userName);
         model.addAttribute("user",user);
-        int follows = userService.followCount(user.getUserId());
-        int fans = userService.fansCount(user.getUserId());
+        int follows = userService.followCount(user.getUserName());
+        int fans = userService.fansCount(user.getUserName());
         model.addAttribute("follows",follows);
         model.addAttribute("fans",fans);
         return "settings/perInfo";
@@ -161,11 +161,11 @@ public class UserController {
         model.addAttribute("queryPostTitle",queryPostTitle);
         String loginName = SecurityContextHolder.getContext().getAuthentication().getName();
         model.addAttribute("loginName", loginName);
-        int follows = userService.followCount(user.getUserId());
-        int fans = userService.fansCount(user.getUserId());
+        int follows = userService.followCount(user.getUserName());
+        int fans = userService.fansCount(user.getUserName());
         model.addAttribute("follows",follows);
         model.addAttribute("fans",fans);
-        int hadFollow = userService.hadFollow(user.getUserId());
+        int hadFollow = userService.hadFollow(user.getUserName());
         model.addAttribute("hadFollow",hadFollow);
         return "page/otherInfo";
     }
@@ -178,14 +178,14 @@ public class UserController {
 
     @PostMapping("/userFollow")
     @ResponseBody
-    public int userFollow(@RequestBody int toId){
-        return userService.userFollow(toId);
+    public int userFollow(@RequestBody Object userName){
+        return userService.userFollow((String) userName);
     }
 
     @PostMapping("/userFollowDel")
     @ResponseBody
-    public int userFollowDel(@RequestBody int toId){
-        return userService.userFollowDel(toId);
+    public int userFollowDel(@RequestBody Object userName){
+        return userService.userFollowDel((String) userName);
     }
 
     @GetMapping("/myFollow")

@@ -16,11 +16,6 @@ public interface AdminService {
     int postDelete(List<Integer> id);
 
     /**
-     * 帖子数量-n
-     */
-    int postNumReduce(int num, String categoryName);
-
-    /**
      * 批量删除回复
      */
     int commentDelete(List<Integer> id);
@@ -28,12 +23,12 @@ public interface AdminService {
     /**
      * 给用户禁言
      */
-    int userForbid(int id);
+    int userForbid(String userName);
 
     /**
      * 解除禁言
      */
-    int relieveForbid(int id);
+    int relieveForbid(String userName);
 
     /**
      * 查询所有用户
@@ -43,12 +38,12 @@ public interface AdminService {
     /**
      * 注销用户
      */
-    int userDelete(int id);
+    int userDelete(String userName);
 
     /**
      * 删除被注销用户发布的帖子和回复
      */
-    int postCommentDel(int id);
+    int postCommentDel(String userName);
 
     /**
      * 查询所有禁言的用户
@@ -64,6 +59,11 @@ public interface AdminService {
      * 所有类别信息
      */
     HashMap<String,Object> getCategoryByPage(int currPage, String orderType, String queryCategoryName);
+
+    /**
+     * 查询每个分类下的帖子数量
+     */
+    long postCount(int categoryId);
 
     /**
      * 删除分类

@@ -26,7 +26,7 @@ public class EchartsController {
         List<Category> categoryList = echartsService.categoryList();
         List<Echarts> list = new ArrayList<>();
         for(Category category : categoryList){
-            list.add(new Echarts(category.getCategoryName(),category.getCategoryPostCount()));
+            list.add(new Echarts(category.getCategoryName(),echartsService.postCount(category.getCategoryId())));
         }
         return list;
     }

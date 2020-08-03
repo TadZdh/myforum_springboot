@@ -3,7 +3,7 @@ package com.example.myforum_springboot.utils;
 import com.example.myforum_springboot.domain.Page;
 
 public class PageUtils {
-    private static final int pageSize = 8;
+    private static final int pageSize = 3;
 
     public static Page pageHandle(int currPage,int totalCount){
         Page page = new Page();

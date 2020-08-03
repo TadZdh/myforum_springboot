@@ -86,7 +86,7 @@
                             </div>
                             <div class="media-body">
                                 <div class="media-heading border-bottom comment-body">
-                                    <span th:text="${comment.commentBody}"></span>
+                                    <h4 th:text="${comment.commentBody}"></h4>
                                 </div>
                                 <div class="comment-signature border-bottom">
                                     <span th:text="${'个性签名：'+comment.user.userSignature}"></span>
@@ -97,9 +97,9 @@
                                           th:text="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd HH:mm')}"></span>
                                     <button class="btn btn-default" onclick="myCommentDel(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.commentId}" th:if="${user.userName}==${comment.user.userName}">删除自己的回复</button>
                                     <th:block th:unless="${user.userName}==${comment.user.userName}" sec:authorize="hasAuthority('admin')">
-                                        <button class="btn btn-default" onclick="userForbid(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.user.userId}"
+                                        <button class="btn btn-default" onclick="userForbid(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.user.userName}"
                                                 th:if="${comment.user.userFlag}==1" style="color:red;">禁言</button>
-                                        <button class="btn btn-default" onclick="relieveForbid(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.user.userId}"
+                                        <button class="btn btn-default" onclick="relieveForbid(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.user.userName}"
                                                 th:unless="${comment.user.userFlag}==1" style="color:red;">解除禁言</button>
                                     </th:block>
                                 </div>
@@ -205,7 +205,7 @@
             alert("验证码不能为空");
         }else {
             var param = {
-                "userId": [[${user?.userId}]],
+                "userName": "[[${user?.userName}]]",
                 "postId": [[${post.postId}]],
                 "commentBody": commentBody,
                 "code": mycode
@@ -240,49 +240,53 @@
     }
 
     function myPostDel(val) {
-        var postId = val;
-        $.ajax({
-            url:"[[@{/user/postDel}]]",
-            async:true,
-            type:"post",
-            data: JSON.stringify(postId),
-            contentType:"application/json;charset=UTF-8",
-            dataType:"text",
-            success:function(data){
-                if(data==1){
-                    alert("删除成功！");
-                    window.location.href="[[@{/post/home}]]";
-                }else{
-                    alert("删除失败，请稍后再试");
+        if (confirm("确定要删除吗？")) {
+            var postId = val;
+            $.ajax({
+                url: "[[@{/user/postDel}]]",
+                async: true,
+                type: "post",
+                data: JSON.stringify(postId),
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data == 1) {
+                        alert("删除成功！");
+                        window.location.href = "[[@{/post/home}]]";
+                    } else {
+                        alert("删除失败，请稍后再试");
+                    }
+                },
+                error: function () {
+                    alert("服务器繁忙");
                 }
-            },
-            error:function(){
-                alert("服务器繁忙");
-            }
-        });
+            });
+        }
     }
 
     function myCommentDel(val) {
-        var commentId = val;
-        $.ajax({
-            url:"[[@{/user/commentDel}]]",
-            async:true,
-            type:"post",
-            data: JSON.stringify(commentId),
-            contentType:"application/json;charset=UTF-8",
-            dataType:"text",
-            success:function(data){
-                if(data==1){
-                    alert("删除成功！");
-                    window.location.reload();
-                }else{
-                    alert("删除失败，请稍后再试");
+        if (confirm("确定要删除吗？")) {
+            var commentId = val;
+            $.ajax({
+                url: "[[@{/user/commentDel}]]",
+                async: true,
+                type: "post",
+                data: JSON.stringify(commentId),
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data == 1) {
+                        alert("删除成功！");
+                        window.location.reload();
+                    } else {
+                        alert("删除失败，请稍后再试");
+                    }
+                },
+                error: function () {
+                    alert("服务器繁忙");
                 }
-            },
-            error:function(){
-                alert("服务器繁忙");
-            }
-        });
+            });
+        }
     }
 
     function del() {
@@ -320,12 +324,12 @@
     }
 
     function userForbid(val) {
-        var userId = val;
+        var userName = val;
         $.ajax({
             url:"[[@{/admin/userForbid}]]",
             async:true,
             type:"post",
-            data: JSON.stringify(userId),
+            data: JSON.stringify(userName),
             contentType:"application/json;charset=UTF-8",
             dataType:"text",
             success:function(data){
@@ -343,12 +347,12 @@
     }
 
     function relieveForbid(val) {
-        var userId = val;
+        var userName = val;
         $.ajax({
             url:"[[@{/admin/relieveForbid}]]",
             async:true,
             type:"post",
-            data: JSON.stringify(userId),
+            data: JSON.stringify(userName),
             contentType:"application/json;charset=UTF-8",
             dataType:"text",
             success:function(data){

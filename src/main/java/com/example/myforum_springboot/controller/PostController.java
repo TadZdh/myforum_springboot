@@ -3,6 +3,7 @@ package com.example.myforum_springboot.controller;
 import com.example.myforum_springboot.domain.*;
 import com.example.myforum_springboot.service.LoginService;
 import com.example.myforum_springboot.service.PostService;
+import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ public class PostController {
         category.setCategoryName(categoryName);
         HashMap<String,Object> map = postService.getPostsByPage(currPage,category,orderType,queryPostTitle);
         List<Post> posts = (List<Post>) map.get("post");
+        for(Post post: posts){
+            post.setPostCommentCount(postService.commentCount(post.getPostId()));
+        }
         Page page = (Page) map.get("page");
         model.addAttribute("posts",posts);
         List<Category> categorys = postService.getAllCategory();
@@ -67,9 +71,9 @@ public class PostController {
         model.addAttribute("post",post2);
         HashMap<String,Object> map = new HashMap<>();
         if(onlyWatch==1)
-            map = postService.getCommentsByPage(currPage,post,post2.getUser().getUserId());
+            map = postService.getCommentsByPage(currPage,post,post2.getUser().getUserName());
         else
-            map = postService.getCommentsByPage(currPage,post,0);
+            map = postService.getCommentsByPage(currPage,post,null);
         List<Comment> comments = (List<Comment>) map.get("comment");
         Page page = (Page) map.get("page");
         model.addAttribute("comments",comments);

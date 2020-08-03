@@ -3,7 +3,6 @@ package com.example.myforum_springboot.domain;
 import java.util.Date;
 
 public class User {
-    private int userId;
     private String userName;
     private String userPassword;
     private String userPortrait;
@@ -14,14 +13,6 @@ public class User {
     private String userRole;
     private int userFlag;
     private Follow follow;
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     public String getUserName() {
         return userName;
@@ -106,7 +97,6 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
                 ", userName='" + userName + '\'' +
                 ", userPassword='" + userPassword + '\'' +
                 ", userPortrait='" + userPortrait + '\'' +

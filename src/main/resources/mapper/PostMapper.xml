@@ -11,11 +11,13 @@
         c.category_id in(select category_id from t_category where category_name = #{category.categoryName})
     </select>
 
-    <resultMap id="getCategoryName" type="category">
+    <resultMap id="CategoryList" type="category">
+        <id property="categoryId" column="category_id"></id>
         <result property="categoryName" column="category_name"></result>
+        <result property="categoryCreatedDate" column="category_created_date"></result>
     </resultMap>
-    <select id="getAllCategory" resultMap="getCategoryName">
-        select category_name from t_category
+    <select id="getAllCategory" resultMap="CategoryList">
+        select * from t_category
     </select>
 
     <resultMap id="getPosts" type="post">
@@ -24,13 +26,11 @@
         <result property="postBody" column="post_body"></result>
         <result property="postCreatedDate" column="post_created_date"></result>
         <result property="postHits" column="post_hits"></result>
-        <result property="postCommentCount" column="post_comment_count"></result>
         <association property="category" javaType="category">
             <result property="categoryName" column="category_name"></result>
         </association>
         <association property="user" javaType="user">
-            <id property="userId" column="user_id"></id>
-            <result property="userName" column="user_name"></result>
+            <id property="userName" column="user_name"></id>
             <result property="userPortrait" column="user_portrait"></result>
             <result property="userSignature" column="user_signature"></result>
             <result property="userFlag" column="user_flag"></result>
@@ -39,15 +39,19 @@
     <select id="getPostsByPage" parameterType="Map" resultMap="getPosts">
         select p.*,c.category_name,u.user_name,u.user_portrait,u.user_signature,u.user_flag
         from t_post p,t_category c,t_user u
-        where p.post_category=c.category_id and p.post_user=u.user_id and
+        where p.post_category=c.category_id and p.post_user=u.user_name and
         <if test="queryPostTitle!=null and queryPostTitle!=''">
             p.post_title like CONCAT('%',#{queryPostTitle},'%') and
         </if>
         c.category_id in(select category_id from t_category where category_name = #{categoryName})
-        order by p.post_id ${orderType}
+        order by p.post_created_date ${orderType}
         <if test="start!=null and size!=null">
             limit #{start},#{size}
         </if>
+    </select>
+
+    <select id="commentCount" parameterType="int" resultType="long">
+        select count(*) from t_comment where comment_post = #{postId}
     </select>
 
     <insert id="postSend" parameterType="Map">
@@ -63,9 +67,9 @@
     </select>
 
     <select id="postDetails" parameterType="post" resultMap="getPosts">
-        select p.*,c.category_name,u.user_id,u.user_name,u.user_portrait,u.user_signature,u.user_flag
+        select p.*,c.category_name,u.user_name,u.user_portrait,u.user_signature,u.user_flag
         from t_post p,t_category c,t_user u
-        where p.post_category=c.category_id and p.post_user=u.user_id and
+        where p.post_category=c.category_id and p.post_user=u.user_name and
         p.post_id=#{postId}
     </select>
 
@@ -78,8 +82,7 @@
         <result property="commentBody" column="comment_body"></result>
         <result property="commentCreatedDate" column="comment_created_date"></result>
         <association property="user" javaType="user">
-            <id property="userId" column="user_id"></id>
-            <result property="userName" column="user_name"></result>
+            <id property="userName" column="user_name"></id>
             <result property="userPortrait" column="user_portrait"></result>
             <result property="userSignature" column="user_signature"></result>
             <result property="userFlag" column="user_flag"></result>
@@ -87,11 +90,11 @@
     </resultMap>
     <select id="getCommentsByPage" parameterType="Map" resultMap="getComments">
         select c.comment_id,c.comment_body,c.comment_created_date,
-        u.user_id,u.user_name,u.user_portrait,u.user_signature,u.user_flag
+        u.user_name,u.user_portrait,u.user_signature,u.user_flag
         from t_comment c,t_post p,t_user u
-        where c.comment_post=p.post_id and c.comment_user=u.user_id and p.post_id=#{post.postId}
-        <if test="userId!=0">
-            and c.comment_user = #{userId}
+        where c.comment_post=p.post_id and c.comment_user=u.user_name and p.post_id=#{post.postId}
+        <if test="userName!=null and userName!=''">
+            and c.comment_user = #{userName}
         </if>
         order by c.comment_created_date asc
         <if test="start!=null and size!=null">
@@ -101,9 +104,6 @@
 
     <select id="commentsCount" resultType="int">
         select count(*) from t_comment where comment_post=#{post.postId}
-        <if test="userId!=0">
-            and comment_user = #{userId}
-        </if>
     </select>
 
 </mapper>

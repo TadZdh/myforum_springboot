@@ -11,6 +11,11 @@ public interface EchartsService {
     List<Category> categoryList();
 
     /**
+     * 查询每个分类下帖子数量
+     */
+    int postCount(int categoryId);
+
+    /**
      * 非活跃用户数
      */
     int inactiveUserCount();

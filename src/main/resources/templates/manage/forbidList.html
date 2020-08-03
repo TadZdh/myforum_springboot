@@ -33,7 +33,7 @@
                     <div class="media">
                         <th:block th:replace="fragments/userList :: userList"></th:block>
                         <div class="media-right">
-                            <button type="button" class="btn btn-danger" th:onclick="relieveForbid([[${user.userId}]])">解除禁言</button>
+                            <button type="button" class="btn btn-danger" th:onclick="relieveForbid([[${user.userName}]])">解除禁言</button>
                         </div>
                     </div>
                 </li>

@@ -35,10 +35,10 @@
             <div>
                 <h4>关注：[[${follows}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;粉丝：[[${fans}]]</h4>
                 <th:block th:if="${hadFollow}==0">
-                    <button th:unless="${loginName}==${user.userName}" type="button" class="btn btn-default" th:onclick="follow('[[${user.userId}]]')">关注TA</button>
+                    <button th:unless="${loginName}==${user.userName}" type="button" class="btn btn-default" th:onclick="follow([[${user.userName}]])">关注TA</button>
                 </th:block>
                 <th:block th:unless="${hadFollow}==0">
-                    <button th:unless="${loginName}==${user.userName}" type="button" class="btn btn-danger" th:onclick="followDel('[[${user.userId}]]')">解除关注</button>
+                    <button th:unless="${loginName}==${user.userName}" type="button" class="btn btn-danger" th:onclick="followDel([[${user.userName}]])">解除关注</button>
                 </th:block>
             </div>
         </div>
@@ -117,12 +117,12 @@
     if (top.location !== self.location) {
         top.location=self.location;
     }
-    function follow(userId) {
+    function follow(userName) {
         $.ajax({
             url:"[[@{/user/userFollow}]]",
             async:true,
             type:"post",
-            data: JSON.stringify(userId),
+            data: JSON.stringify(userName),
             contentType:"application/json;charset=UTF-8",
             dataType:"text",
             success:function(data){
@@ -138,12 +138,12 @@
             }
         });
     }
-    function followDel(userId) {
+    function followDel(userName) {
         $.ajax({
             url:"[[@{/user/userFollowDel}]]",
             async:true,
             type:"post",
-            data: JSON.stringify(userId),
+            data: JSON.stringify(userName),
             contentType:"application/json;charset=UTF-8",
             dataType:"text",
             success:function(data){

@@ -28,6 +28,11 @@ public interface PostMapper {
     List<Post> getPostsByPage(HashMap<String,Object> map);
 
     /**
+     * 查询该帖子的回复数量
+     */
+    long commentCount(int postId);
+
+    /**
      * 帖子点击数+1
      */
     int hitsAdd(Post post);
@@ -56,5 +61,5 @@ public interface PostMapper {
      * 查询某帖子回复数量
      */
     int commentsCount(@Param("post") Post post,
-                      @Param("userId") int userId);
+                      @Param("userName") String userName);
 }
