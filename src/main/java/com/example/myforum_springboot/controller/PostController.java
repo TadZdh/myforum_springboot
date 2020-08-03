@@ -3,7 +3,6 @@ package com.example.myforum_springboot.controller;
 import com.example.myforum_springboot.domain.*;
 import com.example.myforum_springboot.service.LoginService;
 import com.example.myforum_springboot.service.PostService;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
