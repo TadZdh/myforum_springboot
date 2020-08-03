@@ -2,7 +2,7 @@
 
 ## 该程序是一个基于Spring Boot开发的《程序猿小论坛》，用户可以在此系统发布新帖子进行交流、交友  
 
-## 主要运用了Spring Boot+mybatis技术，页面使用了Thymeleaf模板+Bootstrap框架，登录和权限验证使用了Spring Security安全框架，还运用了Spring事务管理和Redis缓存进行开发，数据库为MySql数据库  
+## >>主要运用了Spring Boot+mybatis技术，页面使用了Thymeleaf模板+Bootstrap框架，登录和权限验证使用了Spring Security安全框架，还运用了Spring事务管理和Redis缓存进行开发，数据库为MySql数据库  
 
 ## 系统分为两个用户，一个是管理员，另一个是用户，管理员拥有特殊权限，同时管理员也具有用户的权限  
 
