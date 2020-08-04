@@ -179,7 +179,8 @@
             </div>
             <div class="form-group" sec:authorize="isAuthenticated()">
                 <th:block th:if="${user.userFlag}==1"><label>发表回复</label>
-                    <textarea id="commentBody" name="commentBody" class="form-control" rows="6" style="resize: none;"></textarea>
+                    <textarea id="commentBody" name="commentBody" class="form-control" rows="6" style="resize: none;" placeholder="内容(长度不大于50个字符)"></textarea>
+                    <span id="check_body" class="text-danger"></span>
                     <div th:replace="fragments/code :: code"></div>
                     <button type="button" class="btn btn-default" onclick="reply()">发表</button>
                 </th:block>
@@ -204,6 +205,9 @@
         }else if(mycode==''){
             alert("验证码不能为空");
         }else {
+            var commentBodyAfter = excludeSpace(commentBody);
+            if(bodyCheck(commentBodyAfter)==false)
+                return false;
             var param = {
                 "userName": "[[${user?.userName}]]",
                 "postId": [[${post.postId}]],

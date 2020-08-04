@@ -167,10 +167,18 @@ public class UserServiceImpl implements UserService {
         follow.setFollowTo(userName);
         follow.setFollowDate(new Date());
         int result = userMapper.userFollow(follow);
-/*        if(result>0) {
-            redisTemplate.delete("getUser_" + myName);
-            redisTemplate.delete("getUser_" + userName);
-        }*/
+        if(result>0) {
+            Object obj = redisTemplate.opsForValue().get("follow_count_"+myName);
+            if(obj!=null){
+                int count = Integer.parseInt(obj.toString());
+                redisTemplate.opsForValue().set("follow_count_"+myName,count+1);
+            }
+            Object obj2 = redisTemplate.opsForValue().get("fans_count_"+userName);
+            if(obj2!=null){
+                int count = Integer.parseInt(obj.toString());
+                redisTemplate.opsForValue().set("fans_count_"+userName,count+1);
+            }
+        }
         return result;
     }
 
@@ -181,10 +189,18 @@ public class UserServiceImpl implements UserService {
         follow.setFollowFrom(myName);
         follow.setFollowTo(userName);
         int result = userMapper.userFollowDel(follow);
-/*        if(result>0) {
-            redisTemplate.delete("getUser_" + myName);
-            redisTemplate.delete("getUser_" + userName);
-        }*/
+        if(result>0) {
+            Object obj = redisTemplate.opsForValue().get("follow_count_"+myName);
+            if(obj!=null){
+                int count = Integer.parseInt(obj.toString());
+                redisTemplate.opsForValue().set("follow_count_"+myName,count-1);
+            }
+            Object obj2 = redisTemplate.opsForValue().get("fans_count_"+userName);
+            if(obj2!=null){
+                int count = Integer.parseInt(obj.toString());
+                redisTemplate.opsForValue().set("fans_count_"+userName,count-1);
+            }
+        }
         return result;
     }
 
@@ -199,12 +215,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int followCount(String userName) {
-        return userMapper.followCount(userName);
+        Object obj = redisTemplate.opsForValue().get("follow_count_"+userName);
+        if(obj!=null){
+            return Integer.parseInt(obj.toString());
+        }
+        int result = userMapper.followCount(userName);
+        if(result>=0){
+            redisTemplate.opsForValue().set("follow_count_"+userName,result);
+        }
+        return result;
     }
 
     @Override
     public int fansCount(String userName) {
-        return userMapper.fansCount(userName);
+        Object obj = redisTemplate.opsForValue().get("fans_count_"+userName);
+        if(obj!=null){
+            return Integer.parseInt(obj.toString());
+        }
+        int result = userMapper.fansCount(userName);
+        if(result>=0){
+            redisTemplate.opsForValue().set("fans_count_"+userName,result);
+        }
+        return result;
     }
 
     @Override

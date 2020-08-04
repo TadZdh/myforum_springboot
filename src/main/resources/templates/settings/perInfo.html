@@ -32,11 +32,13 @@
     <br>
     <div class="row form-group">
         <p>签名：</p>
-        <input th:value="${user.userSignature}" id="userSignature" name="userSignature" type="text" class="form-control" placeholder="签名" />
+        <input th:value="${user.userSignature}" id="userSignature" name="userSignature" type="text" class="form-control" placeholder="签名(字符长度不大于30)" />
+        <span id="check_body" class="text-danger"></span>
     </div>
     <div class="row form-group">
         <p>Email：</p>
-        <input th:value="${user.userEmail}" id="userEmail" name="userEmail" type="text" class="form-control" placeholder="Email" />
+        <input th:value="${user.userEmail}" id="userEmail" name="userEmail" type="text" class="form-control" placeholder="邮箱格式(xxx@xxx.xxx)" />
+        <span id="check_email" class="text-danger"></span>
     </div>
     <div class="text-center">
         <button class="btn btn-default" type="button" onclick="userUpdate()">更新资料</button>
@@ -49,7 +51,12 @@
         if(userSignature==''||userEmail=='')
             alert("输入不能为空");
         else {
-            var param = {"userSignature": userSignature, "userEmail": userEmail};
+            if(emailCheck(email)==false)
+                return false;
+            var userSignatureAfter = excludeSpace(userSignature);
+            if(signatureCheck(userSignatureAfter)==false)
+                return false;
+            var param = {"userSignature": userSignatureAfter, "userEmail": userEmail};
             $.ajax({
                 url: "[[@{/user/userUpdate}]]",
                 async: true,

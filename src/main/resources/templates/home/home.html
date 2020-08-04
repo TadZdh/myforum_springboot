@@ -135,8 +135,10 @@
             <div class="form-group" sec:authorize="isAuthenticated()">
                 <th:block th:if="${user.userFlag}==1">
                     <label>发布新帖子</label>
-                    <input type="text" id="postTitle" name="postTitle" class="form-control" placeholder="标题">
-                    <textarea id="postBody" name="postBody" class="form-control" rows="6" style="resize: none;" placeholder="内容"></textarea>
+                    <input type="text" id="postTitle" name="postTitle" class="form-control" placeholder="标题(长度不大于10个字符)">
+                    <span id="check_title" class="text-danger"></span>
+                    <textarea id="postBody" name="postBody" class="form-control" rows="6" style="resize: none;" placeholder="内容(长度不大于50个字符)"></textarea>
+                    <span id="check_body" class="text-danger"></span>
                     <div th:replace="fragments/code :: code"></div>
                     <button type="button" class="btn btn-default" onclick="postWrite()">发表</button>
                 </th:block>
@@ -161,7 +163,13 @@
         }else if(mycode=='') {
             alert("验证码不能为空");
         }else {
-            var param = {"postTitle": postTitle, "postBody": postBody, "categoryName": "[[${choose}]]", "code": mycode};
+            var postTitleAfter = excludeSpace(postTitle);
+            if(titleCheck(postTitleAfter)==false)
+                return false;
+            var postBodyAfter = excludeSpace(postBody);
+            if(bodyCheck(postBodyAfter)==false)
+                return false;
+            var param = {"postTitle": postTitleAfter, "postBody": postBodyAfter, "categoryName": "[[${choose}]]", "code": mycode};
             $.ajax({
                 url: "[[@{/user/postWrite}]]",
                 async: true,

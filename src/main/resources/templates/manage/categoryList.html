@@ -18,6 +18,7 @@
             <br>
             <input type="text" id="newCategory" class="form-control post-query">
             <button type="button" class="btn btn-default" onclick="categoryAdd()">新增分类</button>
+            <span id="check_title" class="text-danger"></span>
             <br><br>
             <a th:href="@{/admin/categoryList(currPage=${beforeCurrPage},orderType='asc',queryCategoryName=${queryCategoryName})}">
                 <i class="glyphicon glyphicon-sort-by-order"></i>
@@ -130,11 +131,14 @@
 
     function categoryAdd() {
         var name = $('#newCategory').val();
+        var nameAfter = excludeSpace(name);
+        if(titleCheck(nameAfter)==false)
+            return false;
         $.ajax({
             url: "[[@{/admin/categoryAdd}]]",
             async: true,
             type: "post",
-            data: JSON.stringify({"categoryName":name}),
+            data: JSON.stringify({"categoryName":nameAfter}),
             contentType: "application/json;charset=UTF-8",
             dataType: "text",
             success: function (data) {

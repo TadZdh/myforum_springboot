@@ -89,6 +89,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public int userDelete(String userName) {
         int follow = adminMapper.userFollowDel(userName);
+        if(follow>0){
+            redisTemplate.delete("follow_count_"+userName);
+            redisTemplate.delete("fans_count_"+userName);
+        }
         int result = adminMapper.userDelete(userName);
         if(result>0){
             redisTemplate.delete("getUser_" + userName);
