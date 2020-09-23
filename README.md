@@ -6,7 +6,7 @@
 
 * ## 系统分为两个用户，一个是管理员，另一个是用户，管理员拥有特殊权限，同时管理员也具有用户的权限  
 
-  * ### 管理员权限：  
+  * ### 管理员功能：  
   
     删除用户发布的帖子  
     将用户禁言、解除禁言  
@@ -15,7 +15,7 @@
     增删帖子分类  
     注销用户  
     
-  * ### 用户权限： 
+  * ### 普通用户功能： 
   
     登录、注册  
     发布新帖子  
@@ -29,4 +29,7 @@
 
 * ## 由个人单独开发，今后会不断地修改完善，属于学习阶段，技术未成熟，请多多包涵
 
-![image](https://github.com/TadZdh/myforum_springboot/blob/master/project_img/home.PNG)
+首页图片：
+![image](https://github.com/TadZdh/myforum_springboot/blob/master/project_img/home.JPG)
+发帖图片：
+![image](https://github.com/TadZdh/myforum_springboot/blob/master/project_img/post.JPG)
