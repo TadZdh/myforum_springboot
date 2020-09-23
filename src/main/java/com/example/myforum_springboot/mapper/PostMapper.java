@@ -62,4 +62,5 @@ public interface PostMapper {
      */
     int commentsCount(@Param("post") Post post,
                       @Param("userName") String userName);
+
 }

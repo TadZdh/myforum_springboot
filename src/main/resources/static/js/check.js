@@ -13,7 +13,7 @@ function excludeSpace(param) {
 function userNameCheck(userName) {
     var check_userName = document.getElementById("check_userName");
     check_userName.innerHTML = "";
-    var reg_userName = /^[\S\n\s]{0,4}$/;
+    var reg_userName = /^[\S\n\s]{4,10}$/;
     var reg_userName2 = /^([a-zA-Z0-9_-])/;
     var flag = reg_userName.test(userName);
     var flag2 = reg_userName2.test(userName);

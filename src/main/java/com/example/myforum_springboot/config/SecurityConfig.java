@@ -1,13 +1,12 @@
 package com.example.myforum_springboot.config;
 
-import com.example.myforum_springboot.service.impl.LoginServiceImpl;
+import com.example.myforum_springboot.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -16,11 +15,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
     @Autowired
-    private LoginServiceImpl loginService;
+    private LoginService loginService;
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        auth.userDetailsService(loginService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+        auth.userDetailsService(loginService).passwordEncoder(encoder);
     }
 
     protected void configure(HttpSecurity http) throws Exception {
@@ -53,6 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/toLogin?logout");
+
+        http.rememberMe().
+                rememberMeParameter("remember");
 
         http.csrf().disable();
 

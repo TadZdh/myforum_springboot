@@ -10,8 +10,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class LoginServiceImpl implements UserDetailsService,LoginService{
+public class LoginServiceImpl implements LoginService{
 
     @Autowired
     private LoginMapper loginMapper;
@@ -66,6 +66,9 @@ public class LoginServiceImpl implements UserDetailsService,LoginService{
         user.setUserCreatedDate(new Date());
         user.setUserRole("user");
         user.setUserFlag(1);
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String hashPass = bcryptPasswordEncoder.encode(user.getUserPassword());
+        user.setUserPassword(hashPass);
         return this.loginMapper.userRegister(user);
     }
 

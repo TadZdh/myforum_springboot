@@ -9,6 +9,7 @@ import com.example.myforum_springboot.utils.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -153,6 +154,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public int pwdUpdate(User user) {
         user.setUserName(SecurityContextHolder.getContext().getAuthentication().getName());
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String hashPass = bcryptPasswordEncoder.encode(user.getUserPassword());
+        user.setUserPassword(hashPass);
         int result = userMapper.pwdUpdate(user);
         if(result>0)
             redisTemplate.delete("getUser_"+user.getUserName());

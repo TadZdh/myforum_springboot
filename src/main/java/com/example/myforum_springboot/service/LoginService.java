@@ -2,10 +2,11 @@ package com.example.myforum_springboot.service;
 
 import com.example.myforum_springboot.domain.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface LoginService {
+public interface LoginService extends UserDetailsService {
 
     /**
      * 查询用户
