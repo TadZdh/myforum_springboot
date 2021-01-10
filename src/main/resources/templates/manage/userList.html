@@ -29,11 +29,14 @@
         </div>
         <div>
             <ul class="list-group list-custom-corner">
-                <li class="list-group-item side-borderless last-border" th:each="user:${users}" th:if="${userName}!=${user.userName}">
+                <li class="list-group-item side-borderless last-border" th:each="user:${users}"
+                    th:if="${userName}!=${user.userName}">
                     <div class="media">
                         <th:block th:replace="fragments/userList :: userList"></th:block>
                         <div class="media-right">
-                            <button type="button" class="btn btn-danger" th:onclick="userDelete([[${user.userName}]])">注销用户</button>
+                            <button type="button" class="btn btn-danger" th:onclick="userDelete([[${user.userName}]])">
+                                注销用户
+                            </button>
                         </div>
                     </div>
                 </li>
@@ -55,7 +58,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span
+                                        aria-hidden="true">上一页</span>
                                 </a>
                                 <a th:href="@{/admin/userList(currPage=${page.currPage}-1,orderType=${orderType},queryUserName=${queryUserName})}"
                                    aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
@@ -64,9 +68,11 @@
                             </li>
                             <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
                                 <li th:if="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/admin/userList(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}" class="page-select">[[${ status.count}]]</a></li>
+                                    <a th:href="@{/admin/userList(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}"
+                                       class="page-select">[[${ status.count}]]</a></li>
                                 <li th:unless="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/admin/userList(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}">[[${ status.count}]]</a></li>
+                                    <a th:href="@{/admin/userList(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}">[[${
+                                        status.count}]]</a></li>
                             </th:block>
                             <li>
                                 <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
@@ -94,28 +100,28 @@
 </div>
 <script type="text/javascript">
     function gotoInfo(info) {
-        window.location.href="/user/otherInfo?userName="+info;
+        window.location.href = "/user/otherInfo?userName=" + info;
     }
 
     function userDelete(info) {
         var msg = "将会强制注销该用户，无法撤销！\n还会删除该用户的帖子和回复！\n请确认！";
-        if (confirm(msg)==true){
+        if (confirm(msg) == true) {
             $.ajax({
-                url:"[[@{/admin/userDelete}]]",
-                async:true,
-                type:"post",
+                url: "[[@{/admin/userDelete}]]",
+                async: true,
+                type: "post",
                 data: JSON.stringify(info),
-                contentType:"application/json;charset=UTF-8",
-                dataType:"text",
-                success:function(data){
-                    if(data==1){
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data == 1) {
                         alert("注销成功！");
                         window.location.reload();
-                    }else{
+                    } else {
                         alert("注销失败，请稍后再试");
                     }
                 },
-                error:function(){
+                error: function () {
                     alert("服务器繁忙");
                 }
             });

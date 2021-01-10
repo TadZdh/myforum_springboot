@@ -16,7 +16,7 @@ public interface UserService {
     /**
      * 用户发帖子
      */
-    int postWrite(Post post,User user);
+    int postWrite(Post post, User user);
 
     /**
      * 回复帖子
@@ -41,17 +41,17 @@ public interface UserService {
     /**
      * 上传头像
      */
-    int fileUpload(HttpServletRequest request, MultipartFile photo,User user);
+    int fileUpload(HttpServletRequest request, MultipartFile photo, User user);
 
     /**
      * 查询自己发过的帖子
      */
-    HashMap<String,Object> myPost(int currPage, String orderType, String queryPostTitle,String userName);
+    HashMap<String, Object> myPost(int currPage, String orderType, String queryPostTitle, String userName);
 
     /**
      * 查询自己的回复
      */
-    HashMap<String,Object> myComment(int currPage, String orderType, String commentBody,String userName);
+    HashMap<String, Object> myComment(int currPage, String orderType, String commentBody, String userName);
 
     /**
      * 修改密码
@@ -86,10 +86,10 @@ public interface UserService {
     /**
      * 我的关注列表信息
      */
-    HashMap<String,Object> followList(int currPage, String orderType, String queryUserName);
+    HashMap<String, Object> followList(int currPage, String orderType, String queryUserName);
 
     /**
      * 我的粉丝列表信息
      */
-    HashMap<String,Object> fansList(int currPage, String orderType, String queryUserName);
+    HashMap<String, Object> fansList(int currPage, String orderType, String queryUserName);
 }

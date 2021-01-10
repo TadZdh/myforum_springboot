@@ -1,83 +1,84 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
 
-html,body{
+html, body {
     height: 100%;
 }
 
-a{
+a {
     color: #f1a417;
 }
-.category-li{
-    border:1px solid snow;
+
+.category-li {
+    border: 1px solid snow;
 }
 
-.post-list{
+.post-list {
     height: 100px;
 }
 
-.text-center .pagination .page-select{
+.text-center .pagination .page-select {
     background-color: #f1a417;
-    color:white;
+    color: white;
 }
 
-.post-search{
+.post-search {
     margin-bottom: 30px;
 }
 
-.small-portrait{
+.small-portrait {
     height: 100px;
     width: 100px;
 }
 
-.big-portrait{
+.big-portrait {
     height: 200px;
     width: 200px;
 }
 
-.post-info{
+.post-info {
     position: relative;
     top: 40px;
 }
 
-.post-user{
+.post-user {
     color: lightcoral;
 }
 
-.comment-portrait{
+.comment-portrait {
     height: 200px;
     width: 200px;
 }
 
-.comment-back{
+.comment-back {
     margin-bottom: 30px;
 }
 
-.border-bottom{
-    border-bottom:1px solid silver;
+.border-bottom {
+    border-bottom: 1px solid silver;
 }
 
-.comment-body{
+.comment-body {
     height: 150px;
 }
 
-.comment-signature{
+.comment-signature {
     height: 40px;
 }
 
-.post-search .post-query{
+.post-search .post-query {
     width: 220px;
 }
 
-.font-omission{
+.font-omission {
     font-size: 20px;
-    display:block;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    overflow:hidden;
-    width:130px;
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 130px;
     margin-right: 10px;
 }
 
@@ -92,11 +93,11 @@ a{
     display: block;
 }
 
-.li-border{
-    border:1px solid #C0C0C0;
+.li-border {
+    border: 1px solid #C0C0C0;
 }
 
-.my-frame{
+.my-frame {
     height: 750px;
     width: 100%;
 }

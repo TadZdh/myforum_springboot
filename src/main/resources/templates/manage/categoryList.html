@@ -39,11 +39,14 @@
                                 <h3 class="text-center">[[${category.categoryName}]]</h3>
                             </div>
                             <div>
-                                <h4 class="text-center" th:text="${'创建时间：'+#dates.format(category.categoryCreatedDate, 'yyyy-MM-dd HH:mm')}"></h4>
+                                <h4 class="text-center"
+                                    th:text="${'创建时间：'+#dates.format(category.categoryCreatedDate, 'yyyy-MM-dd HH:mm')}"></h4>
                                 <h4 class="text-center" th:text="${'帖子数量：'+category.categoryPostCount}"></h4>
                             </div>
                             <div class="text-center">
-                                <button type="button" class="btn btn-danger" th:onclick="categoryDelete([[${category.categoryId}]])">删除该分类</button>
+                                <button type="button" class="btn btn-danger"
+                                        th:onclick="categoryDelete([[${category.categoryId}]])">删除该分类
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -76,9 +79,11 @@
                         </li>
                         <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
                             <li th:if="${ status.count} eq ${page.currPage}">
-                                <a th:href="@{/admin/categoryList(currPage=${ status.count},orderType=${orderType},queryCategoryName=${queryCategoryName})}" class="page-select">[[${ status.count}]]</a></li>
+                                <a th:href="@{/admin/categoryList(currPage=${ status.count},orderType=${orderType},queryCategoryName=${queryCategoryName})}"
+                                   class="page-select">[[${ status.count}]]</a></li>
                             <li th:unless="${ status.count} eq ${page.currPage}">
-                                <a th:href="@{/admin/categoryList(currPage=${ status.count},orderType=${orderType},queryCategoryName=${queryCategoryName})}">[[${ status.count}]]</a></li>
+                                <a th:href="@{/admin/categoryList(currPage=${ status.count},orderType=${orderType},queryCategoryName=${queryCategoryName})}">[[${
+                                    status.count}]]</a></li>
                         </th:block>
                         <li>
                             <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
@@ -106,23 +111,23 @@
 <script type="text/javascript">
     function categoryDelete(info) {
         var msg = "将会删除该分类，无法撤销！\n还会删除该分类下的帖子和回复！\n请确认！";
-        if (confirm(msg)==true){
+        if (confirm(msg) == true) {
             $.ajax({
-                url:"[[@{/admin/categoryDelete}]]",
-                async:true,
-                type:"post",
+                url: "[[@{/admin/categoryDelete}]]",
+                async: true,
+                type: "post",
                 data: JSON.stringify(info),
-                contentType:"application/json;charset=UTF-8",
-                dataType:"text",
-                success:function(data){
-                    if(data==1){
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data == 1) {
                         alert("删除成功！");
                         window.location.reload();
-                    }else{
+                    } else {
                         alert("删除失败，请稍后再试");
                     }
                 },
-                error:function(){
+                error: function () {
                     alert("服务器繁忙");
                 }
             });
@@ -132,24 +137,24 @@
     function categoryAdd() {
         var name = $('#newCategory').val();
         var nameAfter = excludeSpace(name);
-        if(titleCheck(nameAfter)==false)
+        if (titleCheck(nameAfter) == false)
             return false;
         $.ajax({
             url: "[[@{/admin/categoryAdd}]]",
             async: true,
             type: "post",
-            data: JSON.stringify({"categoryName":nameAfter}),
+            data: JSON.stringify({"categoryName": nameAfter}),
             contentType: "application/json;charset=UTF-8",
             dataType: "text",
             success: function (data) {
-                if (data==1) {
+                if (data == 1) {
                     alert("创建成功！");
                     window.location.reload();
-                }else if(data==-1){
+                } else if (data == -1) {
                     alert("创建失败，请核对输入信息");
-                }else if(data==-2){
+                } else if (data == -2) {
                     alert("创建失败，已存在该分类");
-                }else{
+                } else {
                     alert("创建失败，请稍后再试");
                 }
             },

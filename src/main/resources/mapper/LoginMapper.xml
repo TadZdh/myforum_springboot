@@ -22,7 +22,8 @@
     </select>
 
     <insert id="userRegister" parameterType="user">
-        insert into t_user(user_name,user_password,user_portrait,user_signature,user_email,user_created_date,user_role,user_flag)
+        insert into
+        t_user(user_name,user_password,user_portrait,user_signature,user_email,user_created_date,user_role,user_flag)
         values(#{userName},#{userPassword},#{userPortrait},#{userSignature},#{userEmail},#{userCreatedDate},#{userRole},#{userFlag})
     </insert>
 

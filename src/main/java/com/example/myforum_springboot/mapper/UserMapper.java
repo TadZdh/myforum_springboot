@@ -12,7 +12,7 @@ public interface UserMapper {
     /**
      * 用户发帖子
      */
-    int postWrite(HashMap<String,Object> map);
+    int postWrite(HashMap<String, Object> map);
 
     /**
      * 根据类别名称查询其信息
@@ -62,22 +62,22 @@ public interface UserMapper {
     /**
      * 查询自己发过的帖子
      */
-    List<Post> myPost(HashMap<String,Object> map);
+    List<Post> myPost(HashMap<String, Object> map);
 
     /**
      * 查询自己发过的帖子数量
      */
-    int myPostCount(HashMap<String,Object> map);
+    int myPostCount(HashMap<String, Object> map);
 
     /**
      * 查询自己的回复
      */
-    List<Comment> myComment(HashMap<String,Object> map);
+    List<Comment> myComment(HashMap<String, Object> map);
 
     /**
      * 查询自己的回复数量
      */
-    int myCommentCount(HashMap<String,Object> map);
+    int myCommentCount(HashMap<String, Object> map);
 
     /**
      * 修改密码
@@ -112,20 +112,20 @@ public interface UserMapper {
     /**
      * 我的关注列表信息
      */
-    List<User> followList(HashMap<String,Object> map);
+    List<User> followList(HashMap<String, Object> map);
 
     /**
      * 我的关注列表数量
      */
-    int followListCount(HashMap<String,Object> map);
+    int followListCount(HashMap<String, Object> map);
 
     /**
      * 我的粉丝列表信息
      */
-    List<User> fansList(HashMap<String,Object> map);
+    List<User> fansList(HashMap<String, Object> map);
 
     /**
      * 我的粉丝列表数量
      */
-    int fansListCount(HashMap<String,Object> map);
+    int fansListCount(HashMap<String, Object> map);
 }

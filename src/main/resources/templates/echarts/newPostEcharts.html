@@ -6,20 +6,20 @@
 <body>
 <div id="main" style="width: 800px;height:600px;"></div>
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
         var myChart = echarts.init(document.getElementById('main'));
         myChart.showLoading();
-        var names=[];
-        var values=[];
+        var names = [];
+        var values = [];
         $.ajax({
-            type : "post",
-            async : true,
-            url : "[[@{/echarts/newPostEcharts}]]",
-            data : {},
-            dataType : "json",
-            success : function(result) {
+            type: "post",
+            async: true,
+            url: "[[@{/echarts/newPostEcharts}]]",
+            data: {},
+            dataType: "json",
+            success: function (result) {
                 if (result) {
-                    for(var i=0;i<result.length;i++){
+                    for (var i = 0; i < result.length; i++) {
                         names.push(result[i].name);
                         values.push(result[i].num);
                     }
@@ -31,9 +31,9 @@
                         xAxis: {
                             type: 'category',
                             data: names,
-                            axisLabel:{
-                                interval:0,
-                                rotate:45,
+                            axisLabel: {
+                                interval: 0,
+                                rotate: 45,
                             }
                         },
                         yAxis: {
@@ -46,7 +46,7 @@
                     });
                 }
             },
-            error : function(errorMsg) {
+            error: function (errorMsg) {
                 alert("图表请求数据失败!");
                 myChart.hideLoading();
             }

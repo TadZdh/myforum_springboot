@@ -33,10 +33,13 @@
             <h3 class="media-heading text-center">
                 主题：[[${post.postTitle}]]
                 <button class="btn btn-default" onclick="myPostDel(this.value)" sec:authorize="hasAuthority('admin')"
-                        th:value="${post.postId}" style="color: red;">管理员删帖</button>
+                        th:value="${post.postId}" style="color: red;">管理员删帖
+                </button>
             </h3>
-            <button class="btn btn-default" onclick="myPostDel(this.value)" sec:authorize="isAuthenticated()" th:value="${post.postId}"
-                    th:if="${user?.userName}==${post.user.userName}" style="color: red;">删除我的帖子</button>
+            <button class="btn btn-default" onclick="myPostDel(this.value)" sec:authorize="isAuthenticated()"
+                    th:value="${post.postId}"
+                    th:if="${user?.userName}==${post.user.userName}" style="color: red;">删除我的帖子
+            </button>
             <div>
                 <ul class="list-group list-custom-corner">
                     <li class="list-group-item side-borderless last-border">
@@ -95,12 +98,20 @@
                                     <span th:text="${(page.currPage-1)*page.pageSize+status.count+1+'楼'}"></span>
                                     <span class="post-date"
                                           th:text="${#dates.format(comment.commentCreatedDate, 'yyyy-MM-dd HH:mm')}"></span>
-                                    <button class="btn btn-default" onclick="myCommentDel(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.commentId}" th:if="${user.userName}==${comment.user.userName}">删除自己的回复</button>
-                                    <th:block th:unless="${user.userName}==${comment.user.userName}" sec:authorize="hasAuthority('admin')">
-                                        <button class="btn btn-default" onclick="userForbid(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.user.userName}"
-                                                th:if="${comment.user.userFlag}==1" style="color:red;">禁言</button>
-                                        <button class="btn btn-default" onclick="relieveForbid(this.value)" sec:authorize="isAuthenticated()" th:value="${comment.user.userName}"
-                                                th:unless="${comment.user.userFlag}==1" style="color:red;">解除禁言</button>
+                                    <button class="btn btn-default" onclick="myCommentDel(this.value)"
+                                            sec:authorize="isAuthenticated()" th:value="${comment.commentId}"
+                                            th:if="${user.userName}==${comment.user.userName}">删除自己的回复
+                                    </button>
+                                    <th:block th:unless="${user.userName}==${comment.user.userName}"
+                                              sec:authorize="hasAuthority('admin')">
+                                        <button class="btn btn-default" onclick="userForbid(this.value)"
+                                                sec:authorize="isAuthenticated()" th:value="${comment.user.userName}"
+                                                th:if="${comment.user.userFlag}==1" style="color:red;">禁言
+                                        </button>
+                                        <button class="btn btn-default" onclick="relieveForbid(this.value)"
+                                                sec:authorize="isAuthenticated()" th:value="${comment.user.userName}"
+                                                th:unless="${comment.user.userFlag}==1" style="color:red;">解除禁言
+                                        </button>
                                     </th:block>
                                 </div>
                             </div>
@@ -127,47 +138,49 @@
                                 aria-hidden="true">上一页</span>
                         </a>
                     </th:block>
-                    <th:block th:if="${not #lists.isEmpty(comments)}"><nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li>
-                                <a th:href="@{/post/details/(currPage=1,postId=${post.postId},onlyWatch=${onlyWatch})}"
-                                   aria-label="Previous"> <span aria-hidden="true">首页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span
-                                        aria-hidden="true">上一页</span>
-                                </a>
-                                <a th:href="@{/post/details/(currPage=${page.currPage}-1,postId=${post.postId},onlyWatch=${onlyWatch})}"
-                                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
-                                        aria-hidden="true">上一页</span>
-                                </a>
-                            </li>
-                            <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
-                                <li th:if="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/post/details/(currPage=${ status.count},postId=${post.postId},onlyWatch=${onlyWatch})}"
-                                       class="page-select">[[${ status.count}]]</a></li>
-                                <li th:unless="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/post/details/(currPage=${ status.count},postId=${post.postId},onlyWatch=${onlyWatch})}">[[${
-                                        status.count}]]</a></li>
-                            </th:block>
-                            <li>
-                                <a href="#" aria-label="Next"
-                                   th:if="${page.currPage} eq ${page.totalPage }">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
-                                <a th:href="@{/post/details/(currPage=${page.currPage}+1,postId=${post.postId},onlyWatch=${onlyWatch})}"
-                                   th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a th:href="@{/post/details/(currPage=${page.totalPage},postId=${post.postId},onlyWatch=${onlyWatch})}"
-                                   aria-label="Previous"> <span aria-hidden="true">尾页</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav></th:block>
+                    <th:block th:if="${not #lists.isEmpty(comments)}">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li>
+                                    <a th:href="@{/post/details/(currPage=1,postId=${post.postId},onlyWatch=${onlyWatch})}"
+                                       aria-label="Previous"> <span aria-hidden="true">首页</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span
+                                            aria-hidden="true">上一页</span>
+                                    </a>
+                                    <a th:href="@{/post/details/(currPage=${page.currPage}-1,postId=${post.postId},onlyWatch=${onlyWatch})}"
+                                       aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                            aria-hidden="true">上一页</span>
+                                    </a>
+                                </li>
+                                <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                                    <li th:if="${ status.count} eq ${page.currPage}">
+                                        <a th:href="@{/post/details/(currPage=${ status.count},postId=${post.postId},onlyWatch=${onlyWatch})}"
+                                           class="page-select">[[${ status.count}]]</a></li>
+                                    <li th:unless="${ status.count} eq ${page.currPage}">
+                                        <a th:href="@{/post/details/(currPage=${ status.count},postId=${post.postId},onlyWatch=${onlyWatch})}">[[${
+                                            status.count}]]</a></li>
+                                </th:block>
+                                <li>
+                                    <a href="#" aria-label="Next"
+                                       th:if="${page.currPage} eq ${page.totalPage }">
+                                        <span aria-hidden="true">下一页</span>
+                                    </a>
+                                    <a th:href="@{/post/details/(currPage=${page.currPage}+1,postId=${post.postId},onlyWatch=${onlyWatch})}"
+                                       th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                        <span aria-hidden="true">下一页</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/post/details/(currPage=${page.totalPage},postId=${post.postId},onlyWatch=${onlyWatch})}"
+                                       aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </th:block>
                 </th:block>
                 <th:block th:unless="${page.totalCount}!=0">
                     暂无回复
@@ -175,18 +188,21 @@
             </div>
             <div class="form-group" sec:authorize="isAnonymous()">
                 <label>发表回复</label>
-                <textarea class="form-control" rows="6" style="resize: none;" placeholder="登录后即可回复帖子" readonly></textarea>
+                <textarea class="form-control" rows="6" style="resize: none;" placeholder="登录后即可回复帖子"
+                          readonly></textarea>
             </div>
             <div class="form-group" sec:authorize="isAuthenticated()">
                 <th:block th:if="${user.userFlag}==1"><label>发表回复</label>
-                    <textarea id="commentBody" name="commentBody" class="form-control" rows="6" style="resize: none;" placeholder="内容(长度不大于50个字符)"></textarea>
+                    <textarea id="commentBody" name="commentBody" class="form-control" rows="6" style="resize: none;"
+                              placeholder="内容(长度不大于50个字符)"></textarea>
                     <span id="check_body" class="text-danger"></span>
                     <div th:replace="fragments/code :: code"></div>
                     <button type="button" class="btn btn-default" onclick="reply()">发表</button>
                 </th:block>
                 <th:block th:unless="${user.userFlag}==1">
                     <label>发表回复</label>
-                    <textarea class="form-control" rows="6" style="resize: none;" placeholder="你已被禁言" readonly></textarea>
+                    <textarea class="form-control" rows="6" style="resize: none;" placeholder="你已被禁言"
+                              readonly></textarea>
                 </th:block>
             </div>
         </div>
@@ -194,19 +210,19 @@
 </div>
 <script type="text/javascript">
     if (top.location !== self.location) {
-        top.location=self.location;
+        top.location = self.location;
     }
 
     function reply() {
         var commentBody = $("#commentBody").val();
         var mycode = $('#mycode').val();
-        if(commentBody==''){
+        if (commentBody == '') {
             alert("回复不能为空");
-        }else if(mycode==''){
+        } else if (mycode == '') {
             alert("验证码不能为空");
-        }else {
+        } else {
             var commentBodyAfter = excludeSpace(commentBody);
-            if(bodyCheck(commentBodyAfter)==false)
+            if (bodyCheck(commentBodyAfter) == false)
                 return false;
             var param = {
                 "userName": "[[${user?.userName}]]",
@@ -303,23 +319,23 @@
             }
             if (s == '') {
                 alert("你还没有选择任何内容！");
-            }else{
+            } else {
                 $.ajax({
-                    url:"[[@{/admin/commentDelete}]]",
-                    async:true,
-                    type:"post",
+                    url: "[[@{/admin/commentDelete}]]",
+                    async: true,
+                    type: "post",
                     data: JSON.stringify(s),
-                    contentType:"application/json;charset=UTF-8",
-                    dataType:"text",
-                    success:function(data){
-                        if(data>0){
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "text",
+                    success: function (data) {
+                        if (data > 0) {
                             alert("删除成功！");
                             window.location.reload();
-                        }else{
+                        } else {
                             alert("删除失败，请稍后再试");
                         }
                     },
-                    error:function(){
+                    error: function () {
                         alert("服务器繁忙");
                     }
                 });
@@ -330,21 +346,21 @@
     function userForbid(val) {
         var userName = val;
         $.ajax({
-            url:"[[@{/admin/userForbid}]]",
-            async:true,
-            type:"post",
+            url: "[[@{/admin/userForbid}]]",
+            async: true,
+            type: "post",
             data: JSON.stringify(userName),
-            contentType:"application/json;charset=UTF-8",
-            dataType:"text",
-            success:function(data){
-                if(data==1){
+            contentType: "application/json;charset=UTF-8",
+            dataType: "text",
+            success: function (data) {
+                if (data == 1) {
                     alert("该用户已被禁言！");
                     window.location.reload();
-                }else{
+                } else {
                     alert("操作失败，请稍后再试");
                 }
             },
-            error:function(){
+            error: function () {
                 alert("服务器繁忙");
             }
         });
@@ -353,21 +369,21 @@
     function relieveForbid(val) {
         var userName = val;
         $.ajax({
-            url:"[[@{/admin/relieveForbid}]]",
-            async:true,
-            type:"post",
+            url: "[[@{/admin/relieveForbid}]]",
+            async: true,
+            type: "post",
             data: JSON.stringify(userName),
-            contentType:"application/json;charset=UTF-8",
-            dataType:"text",
-            success:function(data){
-                if(data==1){
+            contentType: "application/json;charset=UTF-8",
+            dataType: "text",
+            success: function (data) {
+                if (data == 1) {
                     alert("解除禁言成功！");
                     window.location.reload();
-                }else{
+                } else {
                     alert("操作失败，请稍后再试");
                 }
             },
-            error:function(){
+            error: function () {
                 alert("服务器繁忙");
             }
         });

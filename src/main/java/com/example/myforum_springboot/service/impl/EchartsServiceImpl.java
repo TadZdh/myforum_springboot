@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(propagation= Propagation.REQUIRED,isolation= Isolation.DEFAULT,readOnly=false)
+@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false)
 public class EchartsServiceImpl implements EchartsService {
 
     @Autowired
@@ -25,11 +25,11 @@ public class EchartsServiceImpl implements EchartsService {
     @Override
     public List<Category> categoryList() {
         Object obj = redisTemplate.opsForValue().get("categoryList");
-        if(obj!=null){
+        if (obj != null) {
             return (List<Category>) obj;
         }
         List<Category> categoryList = echartsMapper.categoryList();
-        redisTemplate.opsForValue().set("categoryList",categoryList);
+        redisTemplate.opsForValue().set("categoryList", categoryList);
         return categoryList;
     }
 

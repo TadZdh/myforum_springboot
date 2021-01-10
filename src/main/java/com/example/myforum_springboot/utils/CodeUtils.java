@@ -23,7 +23,7 @@ public class CodeUtils {
         g.setColor(Color.black);
         g.setFont(new Font("", Font.PLAIN, 20));
         g.drawString(randStr, 10, 17);
-        for (int i = 0; i < 300; i++){
+        for (int i = 0; i < 300; i++) {
             int x = rnd.nextInt(width);
             int y = rnd.nextInt(height);
             g.drawOval(x, y, 1, 1);

@@ -47,7 +47,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span
+                                        aria-hidden="true">上一页</span>
                                 </a>
                                 <a th:href="@{/admin/newPostList(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
                                    aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
@@ -56,9 +57,11 @@
                             </li>
                             <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
                                 <li th:if="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/admin/newPostList(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}" class="page-select">[[${ status.count}]]</a></li>
+                                    <a th:href="@{/admin/newPostList(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                       class="page-select">[[${ status.count}]]</a></li>
                                 <li th:unless="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/admin/newPostList(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${ status.count}]]</a></li>
+                                    <a th:href="@{/admin/newPostList(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${
+                                        status.count}]]</a></li>
                             </th:block>
                             <li>
                                 <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">

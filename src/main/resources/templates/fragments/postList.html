@@ -18,7 +18,8 @@
             </div>
             <div class="media-body">
                 <div class="media-heading">
-                    <a class="post-title" th:href="@{/post/details(postId=${post.postId},homeCurrPage=${page.currPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}">
+                    <a class="post-title"
+                       th:href="@{/post/details(postId=${post.postId},homeCurrPage=${page.currPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}">
                         <h3>[[${post.postTitle}]]</h3>
                     </a>
                 </div>

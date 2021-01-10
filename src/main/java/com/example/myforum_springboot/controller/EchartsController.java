@@ -21,44 +21,44 @@ public class EchartsController {
 
     @PostMapping("/categoryEcharts")
     @ResponseBody
-    public List<Echarts> categoryEcharts(){
+    public List<Echarts> categoryEcharts() {
         List<Category> categoryList = echartsService.categoryList();
         List<Echarts> list = new ArrayList<>();
-        for(Category category : categoryList){
-            list.add(new Echarts(category.getCategoryName(),echartsService.postCount(category.getCategoryId())));
+        for (Category category : categoryList) {
+            list.add(new Echarts(category.getCategoryName(), echartsService.postCount(category.getCategoryId())));
         }
         return list;
     }
 
     @PostMapping("/userEcharts")
     @ResponseBody
-    public List<Echarts> userEcharts(){
+    public List<Echarts> userEcharts() {
         int inactiveUserCount = echartsService.inactiveUserCount();
         int activeUserCount = echartsService.activeUserCount();
         List<Echarts> list = new ArrayList<>();
-        list.add(new Echarts("非活跃用户",inactiveUserCount));
-        list.add(new Echarts("活跃用户",activeUserCount));
+        list.add(new Echarts("非活跃用户", inactiveUserCount));
+        list.add(new Echarts("活跃用户", activeUserCount));
         return list;
     }
 
     @PostMapping("/newPostEcharts")
     @ResponseBody
-    public List<Echarts> newPostEcharts(){
+    public List<Echarts> newPostEcharts() {
         List<Echarts> list = new ArrayList<>();
-        for(int i=7;i>0;i--){
-            list.add(new Echarts(i+"天前",echartsService.newPostLastDay(i)));
+        for (int i = 7; i > 0; i--) {
+            list.add(new Echarts(i + "天前", echartsService.newPostLastDay(i)));
         }
         return list;
     }
 
     @PostMapping("/forbidEcharts")
     @ResponseBody
-    public List<Echarts> forbidEcharts(){
+    public List<Echarts> forbidEcharts() {
         int normalUserCount = echartsService.normalUserCount();
         int forbidUserCount = echartsService.forbidUserCount();
         List<Echarts> list = new ArrayList<>();
-        list.add(new Echarts("被禁言用户",forbidUserCount));
-        list.add(new Echarts("正常用户",normalUserCount));
+        list.add(new Echarts("被禁言用户", forbidUserCount));
+        list.add(new Echarts("正常用户", normalUserCount));
         return list;
     }
 }

@@ -19,7 +19,7 @@ public interface LoginMapper {
     List<User> findAuthoritiesByUsername(String userName);
 
     /**
-     *注册新用户
+     * 注册新用户
      */
     int userRegister(User user);
 

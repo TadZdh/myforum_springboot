@@ -15,7 +15,7 @@ public interface PostMapper {
     /**
      * 查询某类别帖子数量
      */
-    int postsCount(HashMap<String,Object> map);
+    int postsCount(HashMap<String, Object> map);
 
     /**
      * 查询所有帖子类别名称
@@ -25,7 +25,7 @@ public interface PostMapper {
     /**
      * 分页查询某类别别所有帖子
      */
-    List<Post> getPostsByPage(HashMap<String,Object> map);
+    List<Post> getPostsByPage(HashMap<String, Object> map);
 
     /**
      * 查询该帖子的回复数量
@@ -40,7 +40,7 @@ public interface PostMapper {
     /**
      * 发帖子
      */
-    int postSend(HashMap<String,Object> map);
+    int postSend(HashMap<String, Object> map);
 
     /**
      * 根据帖子类别查询其对应的Id
@@ -55,7 +55,7 @@ public interface PostMapper {
     /**
      * 查询某帖子的所有回复
      */
-    List<Comment> getCommentsByPage(HashMap<String,Object> map);
+    List<Comment> getCommentsByPage(HashMap<String, Object> map);
 
     /**
      * 查询某帖子回复数量

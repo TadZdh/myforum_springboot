@@ -6,25 +6,25 @@
 <body>
 <div id="main" style="width: 800px;height:600px;"></div>
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
         var myChart = echarts.init(document.getElementById('main'));
         myChart.showLoading();
-        var servicename=[];
-        var servicedata=[];
+        var servicename = [];
+        var servicedata = [];
         $.ajax({
-            type : "post",
-            async : true,
-            url : "[[@{/echarts/forbidEcharts}]]",
-            data : {},
-            dataType : "json",
-            success : function(result) {
+            type: "post",
+            async: true,
+            url: "[[@{/echarts/forbidEcharts}]]",
+            data: {},
+            dataType: "json",
+            success: function (result) {
                 if (result) {
-                    for(var i=0;i<result.length;i++){
-                        servicename[i]=result[i].name;
-                        var obj=new Object();
+                    for (var i = 0; i < result.length; i++) {
+                        servicename[i] = result[i].name;
+                        var obj = new Object();
                         obj.name = result[i].name;
                         obj.value = result[i].num;
-                        servicedata[i]=obj;
+                        servicedata[i] = obj;
                     }
                     myChart.hideLoading();
                     myChart.setOption({
@@ -63,7 +63,7 @@
                     });
                 }
             },
-            error : function(errorMsg) {
+            error: function (errorMsg) {
                 alert("图表请求数据失败!");
                 myChart.hideLoading();
             }

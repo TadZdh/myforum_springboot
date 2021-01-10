@@ -55,9 +55,11 @@
                         </li>
                         <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
                             <li th:if="${ status.count} eq ${page.currPage}">
-                                <a th:href="@{/user/myFollow/(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}" class="page-select">[[${ status.count}]]</a></li>
+                                <a th:href="@{/user/myFollow/(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}"
+                                   class="page-select">[[${ status.count}]]</a></li>
                             <li th:unless="${ status.count} eq ${page.currPage}">
-                                <a th:href="@{/user/myFollow/(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}">[[${ status.count}]]</a></li>
+                                <a th:href="@{/user/myFollow/(currPage=${ status.count},orderType=${orderType},queryUserName=${queryUserName})}">[[${
+                                    status.count}]]</a></li>
                         </th:block>
                         <li>
                             <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">

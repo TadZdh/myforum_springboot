@@ -35,7 +35,7 @@ public interface AdminMapper {
     /**
      * 查询所有用户信息
      */
-    List<User> getUserList(HashMap<String,Object> map);
+    List<User> getUserList(HashMap<String, Object> map);
 
     /**
      * 查询所有用户数量
@@ -75,7 +75,7 @@ public interface AdminMapper {
     /**
      * 查询所有的禁言用户
      */
-    List<User> getForbidList(HashMap<String,Object> map);
+    List<User> getForbidList(HashMap<String, Object> map);
 
     /**
      * 查询所有的禁言用户的数量
@@ -85,7 +85,7 @@ public interface AdminMapper {
     /**
      * 近七天发布的新帖子
      */
-    List<Post> newPosts(HashMap<String,Object> map);
+    List<Post> newPosts(HashMap<String, Object> map);
 
     /**
      * 近七天发布的新帖子的数量
@@ -95,7 +95,7 @@ public interface AdminMapper {
     /**
      * 所有类别信息
      */
-    List<Category> getCategoryByPage(HashMap<String,Object> map);
+    List<Category> getCategoryByPage(HashMap<String, Object> map);
 
     /**
      * 查询每个分类下的帖子数量

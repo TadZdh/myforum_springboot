@@ -37,20 +37,20 @@
     </resultMap>
     <select id="getUserList" parameterType="Map" resultMap="userList">
         select * from t_user where user_role = 'user'
-            <if test="queryUserName!=null and queryUserName!=''">
-                and user_name like CONCAT('%',#{queryUserName},'%')
-            </if>
+        <if test="queryUserName!=null and queryUserName!=''">
+            and user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
         order by user_created_date ${orderType}
-            <if test="start!=null and size!=null">
-                limit #{start},#{size}
-            </if>
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
     </select>
 
     <select id="usersCount" parameterType="String" resultType="int">
         select count(*) from t_user where user_role = 'user'
-            <if test="queryUserName!=null and queryUserName!=''">
-                user_name like CONCAT('%',#{queryUserName},'%')
-            </if>
+        <if test="queryUserName!=null and queryUserName!=''">
+            user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
     </select>
 
     <delete id="userDelete" parameterType="String">
@@ -79,9 +79,9 @@
 
     <select id="getForbidList" parameterType="Map" resultMap="userList">
         select * from t_user where user_flag = 0
-            <if test="queryUserName!=null and queryUserName!=''">
-                and user_name like CONCAT('%',#{queryUserName},'%')
-            </if>
+        <if test="queryUserName!=null and queryUserName!=''">
+            and user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
         order by user_created_date ${orderType}
         <if test="start!=null and size!=null">
             limit #{start},#{size}
@@ -90,9 +90,9 @@
 
     <select id="forbidCount" parameterType="String" resultType="int">
         select count(*) from t_user where user_flag = 0
-            <if test="queryUserName!=null and queryUserName!=''">
-                and user_name like CONCAT('%',#{queryUserName},'%')
-            </if>
+        <if test="queryUserName!=null and queryUserName!=''">
+            and user_name like CONCAT('%',#{queryUserName},'%')
+        </if>
     </select>
 
     <resultMap id="postList" type="post">
@@ -115,9 +115,9 @@
         where
         p.post_user = u.user_name and p.post_category = c.category_id and
         DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= p.post_created_date
-            <if test="queryPostTitle!=null and queryPostTitle!=''">
-                and p.post_title like CONCAT('%',#{queryPostTitle},'%')
-            </if>
+        <if test="queryPostTitle!=null and queryPostTitle!=''">
+            and p.post_title like CONCAT('%',#{queryPostTitle},'%')
+        </if>
         order by post_created_date ${orderType}
         <if test="start!=null and size!=null">
             limit #{start},#{size}
@@ -127,9 +127,9 @@
     <select id="newPostsCount" parameterType="String" resultType="int">
         select count(*) from t_post
         where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= post_created_date
-            <if test="queryPostTitle!=null and queryPostTitle!=''">
-                and post_title like CONCAT('%',#{queryPostTitle},'%')
-            </if>
+        <if test="queryPostTitle!=null and queryPostTitle!=''">
+            and post_title like CONCAT('%',#{queryPostTitle},'%')
+        </if>
     </select>
 
     <resultMap id="categoryList" type="category">

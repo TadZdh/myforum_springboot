@@ -24,7 +24,7 @@ public interface LoginService extends UserDetailsService {
     UserDetails getUser();
 
     /**
-     *注册新用户
+     * 注册新用户
      */
     int userRegister(User user);
 

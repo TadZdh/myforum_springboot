@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Transactional(propagation= Propagation.REQUIRED,isolation= Isolation.DEFAULT,readOnly=false)
+@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false)
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -36,13 +36,13 @@ public class UserServiceImpl implements UserService {
     private RedisTemplate redisTemplate;
 
     @Override
-    public int postWrite(Post post,User user) {
+    public int postWrite(Post post, User user) {
         post.setPostCreatedDate(new Date());
         Category category = userMapper.getCategoryByName(post.getCategory().getCategoryName());
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("post",post);
-        map.put("userName",user.getUserName());
-        map.put("categoryId",category.getCategoryId());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("post", post);
+        map.put("userName", user.getUserName());
+        map.put("categoryId", category.getCategoryId());
         return userMapper.postWrite(map);
     }
 
@@ -50,9 +50,9 @@ public class UserServiceImpl implements UserService {
     public int commentReply(Comment comment) {
         comment.setCommentCreatedDate(new Date());
         int result = userMapper.commentReply(comment);
-        if(result>0){
-            Object obj = redisTemplate.opsForValue().get("commentCount_postId_"+comment.getPost().getPostId());
-            if(obj!=null) {
+        if (result > 0) {
+            Object obj = redisTemplate.opsForValue().get("commentCount_postId_" + comment.getPost().getPostId());
+            if (obj != null) {
                 long count = Long.parseLong(obj.toString());
                 redisTemplate.opsForValue().set("commentCount_postId_" + comment.getPost().getPostId(), count + 1L);
             }
@@ -63,23 +63,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public int postDelete(int postId) {
         int commentCount = userMapper.commentDelCount(postId);
-        if(commentCount>0){
+        if (commentCount > 0) {
             int commentResult = this.userMapper.withCommentDel(postId);
         }
         int delResult = this.userMapper.postDelete(postId);
-        if(delResult>0){
-            redisTemplate.delete("commentCount_postId_"+postId);
+        if (delResult > 0) {
+            redisTemplate.delete("commentCount_postId_" + postId);
         }
         return delResult;
     }
 
     @Override
     public int commentDelete(int commentId) {
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("num",1);
-        map.put("commentId",commentId);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("num", 1);
+        map.put("commentId", commentId);
         int result = userMapper.commentDelete(commentId);
-        if(result>0){
+        if (result > 0) {
             Set<String> keys = redisTemplate.keys("commentCount_postId_" + "*");
             redisTemplate.delete(keys);
         }
@@ -89,65 +89,65 @@ public class UserServiceImpl implements UserService {
     @Override
     public int userUpdate(User user) {
         int result = userMapper.userUpdate(user);
-        if(result>0)
-            redisTemplate.delete("getUser_"+user.getUserName());
+        if (result > 0)
+            redisTemplate.delete("getUser_" + user.getUserName());
         return result;
     }
 
     @Override
-    public int fileUpload(HttpServletRequest request, MultipartFile photo,User user) {
+    public int fileUpload(HttpServletRequest request, MultipartFile photo, User user) {
         String beforeImg = user.getUserPortrait();
-        if(beforeImg!=null){
+        if (beforeImg != null) {
             FileUtils.deleteImgFile(beforeImg);
         }
         String img = FileUtils.uploadImgFile(request, photo);
-        if(img.equals("非图片类型"))
+        if (img.equals("非图片类型"))
             return -1;
-        if(img.equals("图片为空"))
+        if (img.equals("图片为空"))
             return -2;
         user.setUserPortrait(img);
         int uploadResult = userMapper.fileUpload(user);
-        redisTemplate.delete("getUser_"+user.getUserName());
+        redisTemplate.delete("getUser_" + user.getUserName());
         return 1;
     }
 
     @Override
-    public HashMap<String,Object> myPost(int currPage, String orderType, String queryPostTitle,String userName) {
-        HashMap<String,Object> map = new HashMap<>();
-        HashMap<String,Object> map2 = new HashMap<>();
-        map2.put("userName",userName);
-        map2.put("queryPostTitle",queryPostTitle);
+    public HashMap<String, Object> myPost(int currPage, String orderType, String queryPostTitle, String userName) {
+        HashMap<String, Object> map = new HashMap<>();
+        HashMap<String, Object> map2 = new HashMap<>();
+        map2.put("userName", userName);
+        map2.put("queryPostTitle", queryPostTitle);
         int totalCount = userMapper.myPostCount(map2);
-        Page page = PageUtils.pageHandle(currPage,totalCount);
-        map.put("start",page.getStart());
-        map.put("size",page.getPageSize());
-        map.put("orderType",orderType);
-        map.put("queryPostTitle",queryPostTitle);
-        map.put("userName",userName);
-        HashMap<String,Object> map3 = new HashMap<>();
+        Page page = PageUtils.pageHandle(currPage, totalCount);
+        map.put("start", page.getStart());
+        map.put("size", page.getPageSize());
+        map.put("orderType", orderType);
+        map.put("queryPostTitle", queryPostTitle);
+        map.put("userName", userName);
+        HashMap<String, Object> map3 = new HashMap<>();
         List<Post> posts = userMapper.myPost(map);
-        map3.put("page",page);
-        map3.put("post",posts);
+        map3.put("page", page);
+        map3.put("post", posts);
         return map3;
     }
 
     @Override
-    public HashMap<String,Object> myComment(int currPage, String orderType, String commentBody,String userName) {
-        HashMap<String,Object> map = new HashMap<>();
-        HashMap<String,Object> map2 = new HashMap<>();
-        map2.put("userName",userName);
-        map2.put("commentBody",commentBody);
+    public HashMap<String, Object> myComment(int currPage, String orderType, String commentBody, String userName) {
+        HashMap<String, Object> map = new HashMap<>();
+        HashMap<String, Object> map2 = new HashMap<>();
+        map2.put("userName", userName);
+        map2.put("commentBody", commentBody);
         int totalCount = userMapper.myCommentCount(map2);
-        Page page = PageUtils.pageHandle(currPage,totalCount);
-        map.put("start",page.getStart());
-        map.put("size",page.getPageSize());
-        map.put("orderType",orderType);
-        map.put("commentBody",commentBody);
-        map.put("userName",userName);
-        HashMap<String,Object> map3 = new HashMap<>();
+        Page page = PageUtils.pageHandle(currPage, totalCount);
+        map.put("start", page.getStart());
+        map.put("size", page.getPageSize());
+        map.put("orderType", orderType);
+        map.put("commentBody", commentBody);
+        map.put("userName", userName);
+        HashMap<String, Object> map3 = new HashMap<>();
         List<Comment> comments = userMapper.myComment(map);
-        map3.put("page",page);
-        map3.put("comment",comments);
+        map3.put("page", page);
+        map3.put("comment", comments);
         return map3;
     }
 
@@ -158,8 +158,8 @@ public class UserServiceImpl implements UserService {
         String hashPass = bcryptPasswordEncoder.encode(user.getUserPassword());
         user.setUserPassword(hashPass);
         int result = userMapper.pwdUpdate(user);
-        if(result>0)
-            redisTemplate.delete("getUser_"+user.getUserName());
+        if (result > 0)
+            redisTemplate.delete("getUser_" + user.getUserName());
         return result;
     }
 
@@ -171,16 +171,16 @@ public class UserServiceImpl implements UserService {
         follow.setFollowTo(userName);
         follow.setFollowDate(new Date());
         int result = userMapper.userFollow(follow);
-        if(result>0) {
-            Object obj = redisTemplate.opsForValue().get("follow_count_"+myName);
-            if(obj!=null){
+        if (result > 0) {
+            Object obj = redisTemplate.opsForValue().get("follow_count_" + myName);
+            if (obj != null) {
                 int count = Integer.parseInt(obj.toString());
-                redisTemplate.opsForValue().set("follow_count_"+myName,count+1);
+                redisTemplate.opsForValue().set("follow_count_" + myName, count + 1);
             }
-            Object obj2 = redisTemplate.opsForValue().get("fans_count_"+userName);
-            if(obj2!=null){
+            Object obj2 = redisTemplate.opsForValue().get("fans_count_" + userName);
+            if (obj2 != null) {
                 int count = Integer.parseInt(obj.toString());
-                redisTemplate.opsForValue().set("fans_count_"+userName,count+1);
+                redisTemplate.opsForValue().set("fans_count_" + userName, count + 1);
             }
         }
         return result;
@@ -193,16 +193,16 @@ public class UserServiceImpl implements UserService {
         follow.setFollowFrom(myName);
         follow.setFollowTo(userName);
         int result = userMapper.userFollowDel(follow);
-        if(result>0) {
-            Object obj = redisTemplate.opsForValue().get("follow_count_"+myName);
-            if(obj!=null){
+        if (result > 0) {
+            Object obj = redisTemplate.opsForValue().get("follow_count_" + myName);
+            if (obj != null) {
                 int count = Integer.parseInt(obj.toString());
-                redisTemplate.opsForValue().set("follow_count_"+myName,count-1);
+                redisTemplate.opsForValue().set("follow_count_" + myName, count - 1);
             }
-            Object obj2 = redisTemplate.opsForValue().get("fans_count_"+userName);
-            if(obj2!=null){
+            Object obj2 = redisTemplate.opsForValue().get("fans_count_" + userName);
+            if (obj2 != null) {
                 int count = Integer.parseInt(obj.toString());
-                redisTemplate.opsForValue().set("fans_count_"+userName,count-1);
+                redisTemplate.opsForValue().set("fans_count_" + userName, count - 1);
             }
         }
         return result;
@@ -219,26 +219,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int followCount(String userName) {
-        Object obj = redisTemplate.opsForValue().get("follow_count_"+userName);
-        if(obj!=null){
+        Object obj = redisTemplate.opsForValue().get("follow_count_" + userName);
+        if (obj != null) {
             return Integer.parseInt(obj.toString());
         }
         int result = userMapper.followCount(userName);
-        if(result>=0){
-            redisTemplate.opsForValue().set("follow_count_"+userName,result);
+        if (result >= 0) {
+            redisTemplate.opsForValue().set("follow_count_" + userName, result);
         }
         return result;
     }
 
     @Override
     public int fansCount(String userName) {
-        Object obj = redisTemplate.opsForValue().get("fans_count_"+userName);
-        if(obj!=null){
+        Object obj = redisTemplate.opsForValue().get("fans_count_" + userName);
+        if (obj != null) {
             return Integer.parseInt(obj.toString());
         }
         int result = userMapper.fansCount(userName);
-        if(result>=0){
-            redisTemplate.opsForValue().set("fans_count_"+userName,result);
+        if (result >= 0) {
+            redisTemplate.opsForValue().set("fans_count_" + userName, result);
         }
         return result;
     }
@@ -246,42 +246,42 @@ public class UserServiceImpl implements UserService {
     @Override
     public HashMap<String, Object> followList(int currPage, String orderType, String queryUserName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        HashMap<String,Object> map = new HashMap<>();
-        HashMap<String,Object> map2 = new HashMap<>();
-        map2.put("userName",myName);
-        map2.put("queryUserName",queryUserName);
+        HashMap<String, Object> map = new HashMap<>();
+        HashMap<String, Object> map2 = new HashMap<>();
+        map2.put("userName", myName);
+        map2.put("queryUserName", queryUserName);
         int totalCount = userMapper.followListCount(map2);
-        Page page = PageUtils.pageHandle(currPage,totalCount);
-        map.put("start",page.getStart());
-        map.put("size",page.getPageSize());
-        map.put("orderType",orderType);
-        map.put("queryUserName",queryUserName);
-        map.put("userName",myName);
-        HashMap<String,Object> map3 = new HashMap<>();
+        Page page = PageUtils.pageHandle(currPage, totalCount);
+        map.put("start", page.getStart());
+        map.put("size", page.getPageSize());
+        map.put("orderType", orderType);
+        map.put("queryUserName", queryUserName);
+        map.put("userName", myName);
+        HashMap<String, Object> map3 = new HashMap<>();
         List<User> users = userMapper.followList(map);
-        map3.put("page",page);
-        map3.put("user",users);
+        map3.put("page", page);
+        map3.put("user", users);
         return map3;
     }
 
     @Override
     public HashMap<String, Object> fansList(int currPage, String orderType, String queryUserName) {
         String myName = SecurityContextHolder.getContext().getAuthentication().getName();
-        HashMap<String,Object> map = new HashMap<>();
-        HashMap<String,Object> map2 = new HashMap<>();
-        map2.put("userName",myName);
-        map2.put("queryUserName",queryUserName);
+        HashMap<String, Object> map = new HashMap<>();
+        HashMap<String, Object> map2 = new HashMap<>();
+        map2.put("userName", myName);
+        map2.put("queryUserName", queryUserName);
         int totalCount = userMapper.fansListCount(map2);
-        Page page = PageUtils.pageHandle(currPage,totalCount);
-        map.put("start",page.getStart());
-        map.put("size",page.getPageSize());
-        map.put("orderType",orderType);
-        map.put("queryUserName",queryUserName);
-        map.put("userName",myName);
-        HashMap<String,Object> map3 = new HashMap<>();
+        Page page = PageUtils.pageHandle(currPage, totalCount);
+        map.put("start", page.getStart());
+        map.put("size", page.getPageSize());
+        map.put("orderType", orderType);
+        map.put("queryUserName", queryUserName);
+        map.put("userName", myName);
+        HashMap<String, Object> map3 = new HashMap<>();
         List<User> users = userMapper.fansList(map);
-        map3.put("page",page);
-        map3.put("user",users);
+        map3.put("page", page);
+        map3.put("user", users);
         return map3;
     }
 

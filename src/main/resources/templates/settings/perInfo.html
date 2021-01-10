@@ -32,12 +32,14 @@
     <br>
     <div class="row form-group">
         <p>签名：</p>
-        <input th:value="${user.userSignature}" id="userSignature" name="userSignature" type="text" class="form-control" placeholder="签名(字符长度不大于30)" />
+        <input th:value="${user.userSignature}" id="userSignature" name="userSignature" type="text" class="form-control"
+               placeholder="签名(字符长度不大于30)"/>
         <span id="check_body" class="text-danger"></span>
     </div>
     <div class="row form-group">
         <p>Email：</p>
-        <input th:value="${user.userEmail}" id="userEmail" name="userEmail" type="text" class="form-control" placeholder="邮箱格式(xxx@xxx.xxx)" />
+        <input th:value="${user.userEmail}" id="userEmail" name="userEmail" type="text" class="form-control"
+               placeholder="邮箱格式(xxx@xxx.xxx)"/>
         <span id="check_email" class="text-danger"></span>
     </div>
     <div class="text-center">
@@ -48,13 +50,13 @@
     function userUpdate() {
         var userSignature = $("#userSignature").val();
         var userEmail = $("#userEmail").val();
-        if(userSignature==''||userEmail=='')
+        if (userSignature == '' || userEmail == '')
             alert("输入不能为空");
         else {
-            if(emailCheck(email)==false)
+            if (emailCheck(email) == false)
                 return false;
             var userSignatureAfter = excludeSpace(userSignature);
-            if(signatureCheck(userSignatureAfter)==false)
+            if (signatureCheck(userSignatureAfter) == false)
                 return false;
             var param = {"userSignature": userSignatureAfter, "userEmail": userEmail};
             $.ajax({
@@ -79,33 +81,33 @@
         }
     }
 
-    $("#fileUpload").change(function(){
+    $("#fileUpload").change(function () {
         var file = $("#fileUpload")[0].files[0];
         var formData = new FormData();
-        formData.append("files",file);
+        formData.append("files", file);
         $.ajax({
-            type:"post",
+            type: "post",
             //dataType:"json",
-            url:"[[@{/user/fileUpload}]]",
-            data:formData,
+            url: "[[@{/user/fileUpload}]]",
+            data: formData,
             //traditional:true,
             contentType: false,
             processData: false,
-            success:function(data){
-                if(data>0){
+            success: function (data) {
+                if (data > 0) {
                     alert("上传成功！");
                     window.location.reload();
-                }else if(data==-1){
+                } else if (data == -1) {
                     alert("上传的文件不是图片！");
-                }else if(data==-2){
+                } else if (data == -2) {
                     alert("没有上传图片！");
-                }else if(data==-3){
+                } else if (data == -3) {
                     alert("上传图片大于3M，请重新上传！");
-                }else{
+                } else {
                     alert("上传失败，请稍后再试");
                 }
             },
-            error:function(){
+            error: function () {
                 alert("服务器繁忙");
             }
         })

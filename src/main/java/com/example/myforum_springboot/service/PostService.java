@@ -17,7 +17,7 @@ public interface PostService {
     /**
      * 分页查询某类别别所有帖子
      */
-    HashMap<String,Object> getPostsByPage(int currPage, Category category, String orderType, String queryPostTitle);
+    HashMap<String, Object> getPostsByPage(int currPage, Category category, String orderType, String queryPostTitle);
 
     /**
      * 查询该帖子的回复数量
@@ -27,7 +27,7 @@ public interface PostService {
     /**
      * 发帖子
      */
-    int postSend(String userName,Post post,Category category);
+    int postSend(String userName, Post post, Category category);
 
     /**
      * 帖子详情
@@ -37,5 +37,5 @@ public interface PostService {
     /**
      * 查询某帖子的所有回复
      */
-    HashMap<String,Object> getCommentsByPage(int currPage, Post post, String userName);
+    HashMap<String, Object> getCommentsByPage(int currPage, Post post, String userName);
 }

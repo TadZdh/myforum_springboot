@@ -33,7 +33,7 @@ public interface AdminService {
     /**
      * 查询所有用户
      */
-    HashMap<String,Object> getUsersByPage(int currPage, String orderType, String queryUserName);
+    HashMap<String, Object> getUsersByPage(int currPage, String orderType, String queryUserName);
 
     /**
      * 注销用户
@@ -48,17 +48,17 @@ public interface AdminService {
     /**
      * 查询所有禁言的用户
      */
-    HashMap<String,Object> getForbidByPage(int currPage, String orderType, String queryUserName);
+    HashMap<String, Object> getForbidByPage(int currPage, String orderType, String queryUserName);
 
     /**
      * 近七天发布的新帖子
      */
-    HashMap<String,Object> newPosts(int currPage, String orderType, String queryPostTitle);
+    HashMap<String, Object> newPosts(int currPage, String orderType, String queryPostTitle);
 
     /**
      * 所有类别信息
      */
-    HashMap<String,Object> getCategoryByPage(int currPage, String orderType, String queryCategoryName);
+    HashMap<String, Object> getCategoryByPage(int currPage, String orderType, String queryCategoryName);
 
     /**
      * 查询每个分类下的帖子数量

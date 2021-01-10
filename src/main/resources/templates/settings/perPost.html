@@ -51,44 +51,47 @@
                    aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
                         aria-hidden="true">上一页</span>
                 </a>
-            </th:block><th:block th:if="${not #lists.isEmpty(posts)}">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li>
-                        <a th:href="@{/user/perPost/(currPage=1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                           aria-label="Previous"> <span aria-hidden="true">首页</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
-                        </a>
-                        <a th:href="@{/user/perPost/(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                           aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
-                                aria-hidden="true">上一页</span>
-                        </a>
-                    </li>
-                    <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
-                        <li th:if="${ status.count} eq ${page.currPage}">
-                            <a th:href="@{/user/perPost/(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}" class="page-select">[[${ status.count}]]</a></li>
-                        <li th:unless="${ status.count} eq ${page.currPage}">
-                            <a th:href="@{/user/perPost/(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${ status.count}]]</a></li>
-                    </th:block>
-                    <li>
-                        <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
-                            <span aria-hidden="true">下一页</span>
-                        </a>
-                        <a th:href="@{/user/perPost/(currPage=${page.currPage}+1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                           th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
-                            <span aria-hidden="true">下一页</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a th:href="@{/user/perPost/(currPage=${page.totalPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                           aria-label="Previous"> <span aria-hidden="true">尾页</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            </th:block>
+            <th:block th:if="${not #lists.isEmpty(posts)}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li>
+                            <a th:href="@{/user/perPost/(currPage=1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                               aria-label="Previous"> <span aria-hidden="true">首页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
+                            </a>
+                            <a th:href="@{/user/perPost/(currPage=${page.currPage}-1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                               aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                    aria-hidden="true">上一页</span>
+                            </a>
+                        </li>
+                        <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                            <li th:if="${ status.count} eq ${page.currPage}">
+                                <a th:href="@{/user/perPost/(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                   class="page-select">[[${ status.count}]]</a></li>
+                            <li th:unless="${ status.count} eq ${page.currPage}">
+                                <a th:href="@{/user/perPost/(currPage=${ status.count},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${
+                                    status.count}]]</a></li>
+                        </th:block>
+                        <li>
+                            <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                                <span aria-hidden="true">下一页</span>
+                            </a>
+                            <a th:href="@{/user/perPost/(currPage=${page.currPage}+1,orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                               th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                <span aria-hidden="true">下一页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/user/perPost/(currPage=${page.totalPage},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                               aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </th:block>
         </div>
     </th:block>

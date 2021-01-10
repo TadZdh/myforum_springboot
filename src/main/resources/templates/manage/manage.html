@@ -19,7 +19,7 @@
                         <div class="panel-body"><a data-src="/admin/forbidEcharts" href="#">&emsp;>>禁言用户图表</a></div>
                     </div>
                 </li>
-                <li role="presentation" class="li-border" >
+                <li role="presentation" class="li-border">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#collapseTwo">管理用户↓</a>
                     <div id="collapseTwo" class="panel-collapse collapse ">
@@ -27,7 +27,7 @@
                         <div class="panel-body"><a data-src="/admin/forbidList" href="#">&emsp;>>禁言列表</a></div>
                     </div>
                 </li>
-                <li role="presentation" class="li-border" >
+                <li role="presentation" class="li-border">
                     <a data-toggle="collapse" data-parent="#accordion"
                        href="#collapseThree">管理帖子↓</a>
                     <div id="collapseThree" class="panel-collapse collapse">
@@ -43,17 +43,17 @@
     </div>
 </div>
 <script type="text/javascript">
-    $(function(){
-        $("li").on("click",function(){
-            var address =$(this).attr("data-src");
-            $("iframe").attr("src",address);
+    $(function () {
+        $("li").on("click", function () {
+            var address = $(this).attr("data-src");
+            $("iframe").attr("src", address);
         });
     });
 
-    $(function(){
-        $("a").on("click",function(){
-            var address =$(this).attr("data-src");
-            $("iframe").attr("src",address);
+    $(function () {
+        $("a").on("click", function () {
+            var address = $(this).attr("data-src");
+            $("iframe").attr("src", address);
         });
     });
 </script>

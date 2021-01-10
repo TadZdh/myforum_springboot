@@ -4,7 +4,7 @@ public class Echarts {
     private String name;
     private long num;
 
-    public Echarts(String name,long num){
+    public Echarts(String name, long num) {
         super();
         this.name = name;
         this.num = num;

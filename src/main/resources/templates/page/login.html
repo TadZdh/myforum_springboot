@@ -50,24 +50,24 @@
                 <h4 class="modal-title" id="loginLabel">用户登录</h4>
             </div>
             <form th:action="@{/toLogin}" method="post">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label class="control-label">用户名:</label>
-                            <input type="text" class="form-control" name="username">
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">密码:</label>
-                            <input type="password" class="form-control" name="password">
-                        </div>
-                        <div class="form-group">
-                            <input type="checkbox" name="remember">
-                            <label class="control-label">记住我</label>
-                        </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label">用户名:</label>
+                        <input type="text" class="form-control" name="username">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        <button type="submit" class="btn btn-primary">登录</button>
+                    <div class="form-group">
+                        <label class="control-label">密码:</label>
+                        <input type="password" class="form-control" name="password">
                     </div>
+                    <div class="form-group">
+                        <input type="checkbox" name="remember">
+                        <label class="control-label">记住我</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary">登录</button>
+                </div>
             </form>
         </div>
     </div>
@@ -80,92 +80,94 @@
                 </button>
                 <h4 class="modal-title" id="registerLabel">用户注册</h4>
             </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="control-label">用户名:</label>
-                        <input type="text" class="form-control" name="username" id="username" placeholder="须英文字符或数字(4~10位之间)，请不要输入特殊字符">
-                        <span id="check_userName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">密码:</label>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="密码长度在(6~12位之间)，请不要输入特殊字符">
-                        <span id="check_password" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">确认密码:</label>
-                        <input type="password" class="form-control" name="rePassword" id="rePassword" placeholder="请再次输入密码">
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">邮箱:</label>
-                        <input type="text" class="form-control" name="email" id="email" placeholder="邮箱格式(xxx@xxx.xxx)">
-                        <span id="check_email" class="text-danger"></span>
-                    </div>
-                    <div th:replace="fragments/code :: code"></div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">用户名:</label>
+                    <input type="text" class="form-control" name="username" id="username"
+                           placeholder="须英文字符或数字(4~10位之间)，请不要输入特殊字符">
+                    <span id="check_userName" class="text-danger"></span>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" onclick="doRegister()">注册</button>
+                <div class="form-group">
+                    <label class="control-label">密码:</label>
+                    <input type="password" class="form-control" name="password" id="password"
+                           placeholder="密码长度在(6~12位之间)，请不要输入特殊字符">
+                    <span id="check_password" class="text-danger"></span>
                 </div>
+                <div class="form-group">
+                    <label class="control-label">确认密码:</label>
+                    <input type="password" class="form-control" name="rePassword" id="rePassword" placeholder="请再次输入密码">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">邮箱:</label>
+                    <input type="text" class="form-control" name="email" id="email" placeholder="邮箱格式(xxx@xxx.xxx)">
+                    <span id="check_email" class="text-danger"></span>
+                </div>
+                <div th:replace="fragments/code :: code"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="doRegister()">注册</button>
+            </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-function doRegister() {
-    var username = $("#username").val();
-    var password = $("#password").val();
-    var rePassword = $("#rePassword").val();
-    var email = $("#email").val();
-    var mycode = $('#mycode').val();
-    if (username == "") {
-        alert("用户名不能为空");
-    } else if (password == "") {
-        alert("密码不能为空");
-    } else if (rePassword == "") {
-        alert("确认密码不能为空");
-    } else if (email == "") {
-        alert("邮箱不能为空");
-    } else if (password != rePassword) {
-        alert("两次输入的密码不一致");
-    } else{
-        var usernameAfter = excludeSpecial(username);
-        if(userNameCheck(usernameAfter)==false)
-            return false;
-        var passwordAfter = excludeSpecial(password);
-        if(passwordCheck(passwordAfter)==false)
-            return false;
-        if(emailCheck(email)==false)
-            return false;
-        var param = {"userName":usernameAfter,"userPassword":passwordAfter,"userEmail":email,"code":mycode};
-        $.ajax({
-            url:"[[@{/userRegister}]]",
-            async:true,
-            type:"post",
-            data: JSON.stringify(param),
-            contentType:"application/json;charset=UTF-8",
-            dataType:"text",
-            success:function(data){
-                if(data>0){
-                    alert("注册成功！");
-                    window.location.reload();
-                }else if(data==-1){
-                    alert("该账号已存在！");
-                }else if(data==-2){
-                    alert("验证码错误！");
-                }else{
-                    alert("注册失败，请稍后再试");
+    function doRegister() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var rePassword = $("#rePassword").val();
+        var email = $("#email").val();
+        var mycode = $('#mycode').val();
+        if (username == "") {
+            alert("用户名不能为空");
+        } else if (password == "") {
+            alert("密码不能为空");
+        } else if (rePassword == "") {
+            alert("确认密码不能为空");
+        } else if (email == "") {
+            alert("邮箱不能为空");
+        } else if (password != rePassword) {
+            alert("两次输入的密码不一致");
+        } else {
+            var usernameAfter = excludeSpecial(username);
+            if (userNameCheck(usernameAfter) == false)
+                return false;
+            var passwordAfter = excludeSpecial(password);
+            if (passwordCheck(passwordAfter) == false)
+                return false;
+            if (emailCheck(email) == false)
+                return false;
+            var param = {"userName": usernameAfter, "userPassword": passwordAfter, "userEmail": email, "code": mycode};
+            $.ajax({
+                url: "[[@{/userRegister}]]",
+                async: true,
+                type: "post",
+                data: JSON.stringify(param),
+                contentType: "application/json;charset=UTF-8",
+                dataType: "text",
+                success: function (data) {
+                    if (data > 0) {
+                        alert("注册成功！");
+                        window.location.reload();
+                    } else if (data == -1) {
+                        alert("该账号已存在！");
+                    } else if (data == -2) {
+                        alert("验证码错误！");
+                    } else {
+                        alert("注册失败，请稍后再试");
+                    }
+                },
+                error: function () {
+                    alert("服务器繁忙");
                 }
-            },
-            error:function(){
-                alert("服务器繁忙");
-            }
-        });
+            });
+        }
     }
-}
 
-function codeRefresh() {
-    var path = "/toGetCode?id=" + Math.random();
-    $("#codeImg").attr("src", path);
-}
+    function codeRefresh() {
+        var path = "/toGetCode?id=" + Math.random();
+        $("#codeImg").attr("src", path);
+    }
 </script>
 </body>
 </html>

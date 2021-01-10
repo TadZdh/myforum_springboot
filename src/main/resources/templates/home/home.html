@@ -39,23 +39,25 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span>
                             </button>
                             <h4 class="modal-title" id="Label">更多分类</h4>
                         </div>
                         <div class="modal-body">
                             <table>
                                 <tr>
-                                    <th:block th:each="category,status:${categorys}" >
+                                    <th:block th:each="category,status:${categorys}">
                                         <td>
                                             <th:block th:if="${choose}==${category.categoryName}">
                                                 <h4>[[${category.categoryName}]]</h4>
                                             </th:block>
                                             <th:block th:unless="${choose}==${category.categoryName}">
-                                                <a class="font-omission" th:href="@{/post/home(categoryName=${category.categoryName})}">[[${category.categoryName}]]</a>
+                                                <a class="font-omission"
+                                                   th:href="@{/post/home(categoryName=${category.categoryName})}">[[${category.categoryName}]]</a>
                                             </th:block>
                                         </td>
-                                        <th:block th:if="${status.count % 4 eq 0}" th:utext="'</tr><tr>'" ></th:block>
+                                        <th:block th:if="${status.count % 4 eq 0}" th:utext="'</tr><tr>'"></th:block>
                                     </th:block>
                                 </tr>
                             </table>
@@ -84,43 +86,47 @@
                                 aria-hidden="true">上一页</span>
                         </a>
                     </th:block>
-                    <th:block th:if="${not #lists.isEmpty(posts)}"><nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li>
-                                <a th:href="@{/post/home(currPage=1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                                   aria-label="Previous"> <span aria-hidden="true">首页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span aria-hidden="true">上一页</span>
-                                </a>
-                                <a th:href="@{/post/home(currPage=${page.currPage}-1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                                   aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
-                                        aria-hidden="true">上一页</span>
-                                </a>
-                            </li>
-                            <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
-                                <li th:if="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/post/home(currPage=${ status.count},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}" class="page-select">[[${ status.count}]]</a></li>
-                                <li th:unless="${ status.count} eq ${page.currPage}">
-                                    <a th:href="@{/post/home(currPage=${ status.count},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${ status.count}]]</a></li>
-                            </th:block>
-                            <li>
-                                <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
-                                <a th:href="@{/post/home(currPage=${page.currPage}+1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                                   th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a th:href="@{/post/home(currPage=${page.totalPage},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
-                                   aria-label="Previous"> <span aria-hidden="true">尾页</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                    <th:block th:if="${not #lists.isEmpty(posts)}">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li>
+                                    <a th:href="@{/post/home(currPage=1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                       aria-label="Previous"> <span aria-hidden="true">首页</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" aria-label="Previous" th:if="${page.currPage} eq 1"> <span
+                                            aria-hidden="true">上一页</span>
+                                    </a>
+                                    <a th:href="@{/post/home(currPage=${page.currPage}-1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                       aria-label="Previous" th:unless="${page.currPage} eq 1"> <span
+                                            aria-hidden="true">上一页</span>
+                                    </a>
+                                </li>
+                                <th:block th:each="item,status:${#numbers.sequence(1,page.totalPage)}">
+                                    <li th:if="${ status.count} eq ${page.currPage}">
+                                        <a th:href="@{/post/home(currPage=${ status.count},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                           class="page-select">[[${ status.count}]]</a></li>
+                                    <li th:unless="${ status.count} eq ${page.currPage}">
+                                        <a th:href="@{/post/home(currPage=${ status.count},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}">[[${
+                                            status.count}]]</a></li>
+                                </th:block>
+                                <li>
+                                    <a href="#" aria-label="Next" th:if="${page.currPage} eq ${page.totalPage }">
+                                        <span aria-hidden="true">下一页</span>
+                                    </a>
+                                    <a th:href="@{/post/home(currPage=${page.currPage}+1,categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                       th:unless="${page.currPage} eq ${page.totalPage }" aria-label="Next">
+                                        <span aria-hidden="true">下一页</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/post/home(currPage=${page.totalPage},categoryName=${choose},orderType=${orderType},queryPostTitle=${queryPostTitle})}"
+                                       aria-label="Previous"> <span aria-hidden="true">尾页</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </th:block>
                 </th:block>
                 <th:block th:unless="${page.totalCount}!=0">
@@ -130,14 +136,17 @@
             <div class="form-group" sec:authorize="isAnonymous()">
                 <label>发布新帖子</label>
                 <input type="text" class="form-control" placeholder="登录后即可发布新帖子" readonly>
-                <textarea class="form-control" rows="6" style="resize: none;" placeholder="登录后即可发布新帖子" readonly></textarea>
+                <textarea class="form-control" rows="6" style="resize: none;" placeholder="登录后即可发布新帖子"
+                          readonly></textarea>
             </div>
             <div class="form-group" sec:authorize="isAuthenticated()">
                 <th:block th:if="${user.userFlag}==1">
                     <label>发布新帖子</label>
-                    <input type="text" id="postTitle" name="postTitle" class="form-control" placeholder="标题(长度不大于10个字符)">
+                    <input type="text" id="postTitle" name="postTitle" class="form-control"
+                           placeholder="标题(长度不大于10个字符)">
                     <span id="check_title" class="text-danger"></span>
-                    <textarea id="postBody" name="postBody" class="form-control" rows="6" style="resize: none;" placeholder="内容(长度不大于50个字符)"></textarea>
+                    <textarea id="postBody" name="postBody" class="form-control" rows="6" style="resize: none;"
+                              placeholder="内容(长度不大于50个字符)"></textarea>
                     <span id="check_body" class="text-danger"></span>
                     <div th:replace="fragments/code :: code"></div>
                     <button type="button" class="btn btn-default" onclick="postWrite()">发表</button>
@@ -145,7 +154,8 @@
                 <th:block th:unless="${user.userFlag}==1">
                     <label>发布新帖子</label>
                     <input type="text" class="form-control" placeholder="你已被禁言" readonly>
-                    <textarea class="form-control" rows="6" style="resize: none;" placeholder="你已被禁言" readonly></textarea>
+                    <textarea class="form-control" rows="6" style="resize: none;" placeholder="你已被禁言"
+                              readonly></textarea>
                 </th:block>
             </div>
         </div>
@@ -156,20 +166,25 @@
         var postTitle = $("#postTitle").val();
         var postBody = $("#postBody").val();
         var mycode = $('#mycode').val();
-        if(postTitle==''){
+        if (postTitle == '') {
             alert("标题不能为空");
-        }else if(postBody==''){
+        } else if (postBody == '') {
             alert("内容不能为空");
-        }else if(mycode=='') {
+        } else if (mycode == '') {
             alert("验证码不能为空");
-        }else {
+        } else {
             var postTitleAfter = excludeSpace(postTitle);
-            if(titleCheck(postTitleAfter)==false)
+            if (titleCheck(postTitleAfter) == false)
                 return false;
             var postBodyAfter = excludeSpace(postBody);
-            if(bodyCheck(postBodyAfter)==false)
+            if (bodyCheck(postBodyAfter) == false)
                 return false;
-            var param = {"postTitle": postTitleAfter, "postBody": postBodyAfter, "categoryName": "[[${choose}]]", "code": mycode};
+            var param = {
+                "postTitle": postTitleAfter,
+                "postBody": postBodyAfter,
+                "categoryName": "[[${choose}]]",
+                "code": mycode
+            };
             $.ajax({
                 url: "[[@{/user/postWrite}]]",
                 async: true,
@@ -209,24 +224,24 @@
             }
             if (s == '') {
                 alert("你还没有选择任何内容！");
-            }else{
-                var param = {"deleteId":s,"categoryName":"[[${choose}]]"};
+            } else {
+                var param = {"deleteId": s, "categoryName": "[[${choose}]]"};
                 $.ajax({
-                    url:"[[@{/admin/postDelete}]]",
-                    async:true,
-                    type:"post",
+                    url: "[[@{/admin/postDelete}]]",
+                    async: true,
+                    type: "post",
                     data: JSON.stringify(param),
-                    contentType:"application/json;charset=UTF-8",
-                    dataType:"text",
-                    success:function(data){
-                        if(data>0){
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "text",
+                    success: function (data) {
+                        if (data > 0) {
                             alert("删除成功！");
                             window.location.reload();
-                        }else{
+                        } else {
                             alert("删除失败，请稍后再试");
                         }
                     },
-                    error:function(){
+                    error: function () {
                         alert("服务器繁忙");
                     }
                 });

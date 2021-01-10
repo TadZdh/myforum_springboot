@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping("/postWrite")
     @ResponseBody
-    public int postWrite(HttpServletRequest request,@RequestBody HashMap<String,Object> map){
+    public int postWrite(HttpServletRequest request, @RequestBody HashMap<String, Object> map) {
         Post post = new Post();
         String postTitle = (String) map.get("postTitle");
         String postBody = (String) map.get("postBody");
@@ -37,17 +37,17 @@ public class UserController {
         category.setCategoryName(categoryName);
         post.setCategory(category);
         String code = (String) map.get("code");
-        if(code.equals(request.getSession().getAttribute("code"))) {
+        if (code.equals(request.getSession().getAttribute("code"))) {
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User user = loginService.getUser(userName);
-            return userService.postWrite(post,user);
+            return userService.postWrite(post, user);
         }
         return -1;
     }
 
     @PostMapping("/reply")
     @ResponseBody
-    public int commentReply(HttpServletRequest request,@RequestBody HashMap<String,Object> map){
+    public int commentReply(HttpServletRequest request, @RequestBody HashMap<String, Object> map) {
         User user = new User();
         user.setUserName((String) map.get("userName"));
         Post post = new Post();
@@ -57,38 +57,38 @@ public class UserController {
         comment.setUser(user);
         comment.setPost(post);
         String code = (String) map.get("code");
-        if(code.equals(request.getSession().getAttribute("code")))
+        if (code.equals(request.getSession().getAttribute("code")))
             return userService.commentReply(comment);
         return -1;
     }
 
     @PostMapping("/postDel")
     @ResponseBody
-    public int myPostDel(@RequestBody int id){
+    public int myPostDel(@RequestBody int id) {
         return userService.postDelete(id);
     }
 
     @PostMapping("/commentDel")
     @ResponseBody
-    public int myCommentDel(@RequestBody int id){
+    public int myCommentDel(@RequestBody int id) {
         return userService.commentDelete(id);
     }
 
     @GetMapping("/perInfo")
-    public String getPerInfo(Model model){
+    public String getPerInfo(Model model) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = loginService.getUser(userName);
-        model.addAttribute("user",user);
+        model.addAttribute("user", user);
         int follows = userService.followCount(user.getUserName());
         int fans = userService.fansCount(user.getUserName());
-        model.addAttribute("follows",follows);
-        model.addAttribute("fans",fans);
+        model.addAttribute("follows", follows);
+        model.addAttribute("fans", fans);
         return "settings/perInfo";
     }
 
     @PostMapping("/userUpdate")
     @ResponseBody
-    public int userUpdate(@RequestBody User user){
+    public int userUpdate(@RequestBody User user) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         user.setUserName(userName);
         return userService.userUpdate(user);
@@ -96,129 +96,129 @@ public class UserController {
 
     @PostMapping("/fileUpload")
     @ResponseBody
-    public int fileUpload(@RequestParam( value="files",required=false) MultipartFile photo, HttpServletRequest request){
+    public int fileUpload(@RequestParam(value = "files", required = false) MultipartFile photo, HttpServletRequest request) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = loginService.getUser(userName);
-        return userService.fileUpload(request,photo,user);
+        return userService.fileUpload(request, photo, user);
     }
 
     @GetMapping("/perPost")
     public String getPerPost(
-            @RequestParam(value="currPage",defaultValue="1",required=false) int currPage,
-            @RequestParam(value="orderType",defaultValue="desc",required=false) String orderType,
-            @RequestParam(value="queryPostTitle",required=false) String queryPostTitle,
-            Model model){
+            @RequestParam(value = "currPage", defaultValue = "1", required = false) int currPage,
+            @RequestParam(value = "orderType", defaultValue = "desc", required = false) String orderType,
+            @RequestParam(value = "queryPostTitle", required = false) String queryPostTitle,
+            Model model) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = new User();
         user.setUserName(userName);
-        HashMap<String,Object> map = userService.myPost(currPage,orderType,queryPostTitle,userName);
+        HashMap<String, Object> map = userService.myPost(currPage, orderType, queryPostTitle, userName);
         List<Post> posts = (List<Post>) map.get("post");
         Page page = (Page) map.get("page");
-        model.addAttribute("posts",posts);
-        model.addAttribute("page",page);
-        model.addAttribute("orderType",orderType);
-        model.addAttribute("beforeCurrPage",currPage);
-        model.addAttribute("queryPostTitle",queryPostTitle);
+        model.addAttribute("posts", posts);
+        model.addAttribute("page", page);
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("beforeCurrPage", currPage);
+        model.addAttribute("queryPostTitle", queryPostTitle);
         return "settings/perPost";
     }
 
     @GetMapping("/perComment")
     public String getPerComment(
-            @RequestParam(value="currPage",defaultValue="1",required=false) int currPage,
-            @RequestParam(value="orderType",defaultValue="desc",required=false) String orderType,
-            @RequestParam(value="queryCommentBody",required=false) String queryCommentBody,
-            Model model){
+            @RequestParam(value = "currPage", defaultValue = "1", required = false) int currPage,
+            @RequestParam(value = "orderType", defaultValue = "desc", required = false) String orderType,
+            @RequestParam(value = "queryCommentBody", required = false) String queryCommentBody,
+            Model model) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = new User();
         user.setUserName(userName);
-        HashMap<String,Object> map = userService.myComment(currPage,orderType,queryCommentBody,userName);
+        HashMap<String, Object> map = userService.myComment(currPage, orderType, queryCommentBody, userName);
         List<Comment> comments = (List<Comment>) map.get("comment");
         Page page = (Page) map.get("page");
-        model.addAttribute("comments",comments);
-        model.addAttribute("page",page);
-        model.addAttribute("orderType",orderType);
-        model.addAttribute("beforeCurrPage",currPage);
-        model.addAttribute("queryCommentBody",queryCommentBody);
+        model.addAttribute("comments", comments);
+        model.addAttribute("page", page);
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("beforeCurrPage", currPage);
+        model.addAttribute("queryCommentBody", queryCommentBody);
         return "settings/perComment";
     }
 
     @GetMapping("/otherInfo")
     public String otherInfo(
-            @RequestParam(value="currPage",defaultValue="1",required=false) int currPage,
-            @RequestParam(value="orderType",defaultValue="asc",required=false) String orderType,
-            @RequestParam(value="queryPostTitle",required=false) String queryPostTitle,
+            @RequestParam(value = "currPage", defaultValue = "1", required = false) int currPage,
+            @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
+            @RequestParam(value = "queryPostTitle", required = false) String queryPostTitle,
             String userName,
-            Model model){
+            Model model) {
         User user = loginService.getUser(userName);
-        model.addAttribute("user",user);
-        HashMap<String,Object> map = userService.myPost(currPage,orderType,queryPostTitle,userName);
+        model.addAttribute("user", user);
+        HashMap<String, Object> map = userService.myPost(currPage, orderType, queryPostTitle, userName);
         List<Post> posts = (List<Post>) map.get("post");
         Page page = (Page) map.get("page");
-        model.addAttribute("posts",posts);
-        model.addAttribute("page",page);
-        model.addAttribute("orderType",orderType);
-        model.addAttribute("beforeCurrPage",currPage);
-        model.addAttribute("queryPostTitle",queryPostTitle);
+        model.addAttribute("posts", posts);
+        model.addAttribute("page", page);
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("beforeCurrPage", currPage);
+        model.addAttribute("queryPostTitle", queryPostTitle);
         String loginName = SecurityContextHolder.getContext().getAuthentication().getName();
         model.addAttribute("loginName", loginName);
         int follows = userService.followCount(user.getUserName());
         int fans = userService.fansCount(user.getUserName());
-        model.addAttribute("follows",follows);
-        model.addAttribute("fans",fans);
+        model.addAttribute("follows", follows);
+        model.addAttribute("fans", fans);
         int hadFollow = userService.hadFollow(user.getUserName());
-        model.addAttribute("hadFollow",hadFollow);
+        model.addAttribute("hadFollow", hadFollow);
         return "page/otherInfo";
     }
 
     @PostMapping("/pwdUpdate")
     @ResponseBody
-    public int pwdUpdate(@RequestBody User user){
+    public int pwdUpdate(@RequestBody User user) {
         return userService.pwdUpdate(user);
     }
 
     @PostMapping("/userFollow")
     @ResponseBody
-    public int userFollow(@RequestBody Object userName){
+    public int userFollow(@RequestBody Object userName) {
         return userService.userFollow((String) userName);
     }
 
     @PostMapping("/userFollowDel")
     @ResponseBody
-    public int userFollowDel(@RequestBody Object userName){
+    public int userFollowDel(@RequestBody Object userName) {
         return userService.userFollowDel((String) userName);
     }
 
     @GetMapping("/myFollow")
     public String myFollow(
-            @RequestParam(value="currPage",defaultValue="1",required=false) int currPage,
-            @RequestParam(value="orderType",defaultValue="desc",required=false) String orderType,
-            @RequestParam(value="queryUserName",required=false) String queryUserName,
-            Model model){
-        HashMap<String,Object> map = userService.followList(currPage,orderType,queryUserName);
+            @RequestParam(value = "currPage", defaultValue = "1", required = false) int currPage,
+            @RequestParam(value = "orderType", defaultValue = "desc", required = false) String orderType,
+            @RequestParam(value = "queryUserName", required = false) String queryUserName,
+            Model model) {
+        HashMap<String, Object> map = userService.followList(currPage, orderType, queryUserName);
         List<User> users = (List<User>) map.get("user");
         Page page = (Page) map.get("page");
-        model.addAttribute("users",users);
-        model.addAttribute("page",page);
-        model.addAttribute("orderType",orderType);
-        model.addAttribute("beforeCurrPage",currPage);
-        model.addAttribute("queryUserName",queryUserName);
+        model.addAttribute("users", users);
+        model.addAttribute("page", page);
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("beforeCurrPage", currPage);
+        model.addAttribute("queryUserName", queryUserName);
         return "settings/myFollow";
     }
 
     @GetMapping("/myFans")
     public String myFans(
-            @RequestParam(value="currPage",defaultValue="1",required=false) int currPage,
-            @RequestParam(value="orderType",defaultValue="desc",required=false) String orderType,
-            @RequestParam(value="queryUserName",required=false) String queryUserName,
-            Model model){
-        HashMap<String,Object> map = userService.fansList(currPage,orderType,queryUserName);
+            @RequestParam(value = "currPage", defaultValue = "1", required = false) int currPage,
+            @RequestParam(value = "orderType", defaultValue = "desc", required = false) String orderType,
+            @RequestParam(value = "queryUserName", required = false) String queryUserName,
+            Model model) {
+        HashMap<String, Object> map = userService.fansList(currPage, orderType, queryUserName);
         List<User> users = (List<User>) map.get("user");
         Page page = (Page) map.get("page");
-        model.addAttribute("users",users);
-        model.addAttribute("page",page);
-        model.addAttribute("orderType",orderType);
-        model.addAttribute("beforeCurrPage",currPage);
-        model.addAttribute("queryUserName",queryUserName);
+        model.addAttribute("users", users);
+        model.addAttribute("page", page);
+        model.addAttribute("orderType", orderType);
+        model.addAttribute("beforeCurrPage", currPage);
+        model.addAttribute("queryUserName", queryUserName);
         return "settings/myFans";
     }
 }

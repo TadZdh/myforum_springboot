@@ -23,7 +23,7 @@ public class LoginController {
 
     @PostMapping("/userRegister")
     @ResponseBody
-    public int userRegister(HttpServletRequest request,@RequestBody HashMap<String,Object> map){
+    public int userRegister(HttpServletRequest request, @RequestBody HashMap<String, Object> map) {
         User user = new User();
         String userName = (String) map.get("userName");
         String userPassword = (String) map.get("userPassword");
@@ -32,7 +32,7 @@ public class LoginController {
         user.setUserPassword(userPassword);
         user.setUserEmail(userEmail);
         String code = (String) map.get("code");
-        if(code.equals(request.getSession().getAttribute("code")))
+        if (code.equals(request.getSession().getAttribute("code")))
             return loginService.userRegister(user);
         return -2;
     }
@@ -40,9 +40,9 @@ public class LoginController {
     @RequestMapping("/toGetCode")
     public void toGetCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("image/jpeg");
-        response.setHeader("Pragma","No-cache");
-        response.setHeader("Cache-Control","no-cache");
-        response.setDateHeader("Expire",0);
-        CodeUtils.getCode(request,response);
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expire", 0);
+        CodeUtils.getCode(request, response);
     }
 }

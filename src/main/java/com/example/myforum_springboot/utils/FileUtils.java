@@ -59,7 +59,7 @@ public class FileUtils {
 
     // 文件批量删除
     public static boolean deleteManyFiles(String[] filePath) {
-        for(int i=0;i<filePath.length;i++) {
+        for (int i = 0; i < filePath.length; i++) {
             String realPath = "src/main/resources/static" + filePath[i];
             File delFile = new File(realPath);
             if (delFile.isFile() && delFile.exists()) {
