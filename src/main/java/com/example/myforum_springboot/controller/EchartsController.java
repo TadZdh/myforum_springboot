@@ -61,10 +61,4 @@ public class EchartsController {
         list.add(new Echarts("正常用户", normalUserCount));
         return list;
     }
-
-    @RequestMapping("/abcdef")
-    @ResponseBody
-    public void abcdef() {
-        System.out.println("*****************修复banner的bug");
-    }
 }
