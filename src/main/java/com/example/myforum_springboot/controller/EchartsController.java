@@ -73,5 +73,7 @@ public class EchartsController {
         System.out.println("44444444444444444");
         System.out.println("33333333333333333");
         System.out.println("44444444444444444");
+
+        System.out.println("*****************修复shop的bug");
     }
 }
