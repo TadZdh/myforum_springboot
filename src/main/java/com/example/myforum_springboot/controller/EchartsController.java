@@ -61,4 +61,10 @@ public class EchartsController {
         list.add(new Echarts("正常用户", normalUserCount));
         return list;
     }
+
+    @RequestMapping("/abc")
+    @ResponseBody
+    public void abc() {
+        System.out.println("11111111111111111");
+    }
 }
